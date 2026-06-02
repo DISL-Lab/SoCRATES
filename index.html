@@ -367,9 +367,12 @@
             <figure>
                 <img src="static/img/overview.png" alt="SoCRATES overview">
                 <figcaption>
-                    <strong>Figure 1.</strong> Overview of <strong>SoCRATES</strong>. <em>Agentic scenario curation</em> grounds every scenario in a real-world conflict; <em>socio-cognitive probing</em> expands each scenario along five axes to expose where each mediator fails; and <em>topic-localized evaluation</em> scores each trajectory with three metrics to quantify the mediator's contribution.
+                    <strong>Figure 1.</strong> Overview of <strong>SoCRATES</strong>. <em>Agentic scenario curation</em> grounds every scenario in a real-world conflict, <em>socio-cognitive probing</em> expands each scenario along five axes to expose where each mediator fails, and <em>topic-localized evaluation</em> scores each trajectory with three metrics to quantify the mediator's contribution.
                 </figcaption>
             </figure>
+            <p class="body-text narrow" style="margin-top:20px;">
+                Evaluating LLM mediators remains challenging, as mediation unfolds as a real-time trajectory shaped by disputants' shifting emotions, intentions, and context. Existing testbeds rely on a few expert-authored domains, vary mainly strategic posture, and score every turn against every topic, introducing off-topic noise. We introduce <strong style="color:var(--navy)">SoCRATES</strong>, a benchmark for evaluating proactive LLM mediators in realistic, multi-domain testbeds. It constructs scenarios from real conflicts through an agentic pipeline across eight domains, probes five socio-cognitive adaptation axes (strategic posture, party composition, history length, emotional reactivity, and cultural identity), and scores each topic only on the turns that advance it via a topic-localized evaluator. The evaluator reaches 0.82 alignment with human experts, more than doubling a per-turn baseline. Benchmarking eight frontier LLMs, we find that even the strongest mediator closes only about a third of the unmediated consensus gap under diverse and realistic testbeds, with performance varying sharply by socio-cognitive axis, highlighting that progress lies in social adaptation to diverse conditions.
+            </p>
         </section>
 
         <!-- ===== Task ===== -->
@@ -454,7 +457,7 @@
 
         <!-- ===== Motivation ===== -->
         <section id="motivation">
-            <div class="section-title">Why Benchmark LLM Mediation?</div>
+            <div class="section-title">Why Benchmark Conflict Resolution?</div>
             <p class="section-sub">If we want LLMs to defuse real disputes, we first need a trustworthy way to measure how well they actually do it.</p>
 
             <div class="narrow">
@@ -487,14 +490,6 @@
 
                 <p class="body-text">SoCRATES removes all three obstacles at once, so that a mediator's score reflects genuine social skill rather than the narrowness of the test. The next section details how each component works.</p>
             </div>
-        </section>
-
-        <!-- ===== Abstract ===== -->
-        <section id="abstract">
-            <div class="section-title">Abstract</div>
-            <p class="body-text narrow">
-                Evaluating LLM mediators remains challenging, as mediation unfolds as a real-time trajectory shaped by disputants' shifting emotions, intentions, and context. Existing testbeds rely on a few expert-authored domains, vary mainly strategic posture, and score every turn against every topic, introducing off-topic noise. We introduce <strong style="color:var(--navy)">SoCRATES</strong>, a benchmark for evaluating proactive LLM mediators in realistic, multi-domain testbeds. It constructs scenarios from real conflicts through an agentic pipeline across eight domains, probes five socio-cognitive adaptation axes (strategic posture, party composition, history length, emotional reactivity, and cultural identity), and scores each topic only on the turns that advance it via a topic-localized evaluator. The evaluator reaches 0.82 alignment with human experts, more than doubling a per-turn baseline. Benchmarking eight frontier LLMs, we find that even the strongest mediator closes only about a third of the unmediated consensus gap under diverse and realistic testbeds, with performance varying sharply by socio-cognitive axis, highlighting that progress lies in social adaptation to diverse conditions.
-            </p>
         </section>
 
         <!-- ===== Contributions ===== -->
