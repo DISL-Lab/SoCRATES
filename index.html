@@ -358,14 +358,14 @@
 
         <!-- ===== Task ===== -->
         <section id="task">
-            <div class="section-title">The Task: Proactive Mediation</div>
-            <p class="section-sub">Two parties argue over a real dispute, turn by turn. A <strong style="color:var(--eff)">mediator</strong> watches silently and decides <em>when</em> to step in and <em>what</em> to say to steer the parties toward agreement &mdash; without ever taking a side.</p>
+            <div class="section-title">The Mediation Task</div>
+            <p class="section-sub">Two parties argue over a real dispute, turn by turn. A <strong style="color:var(--eff)">mediator</strong> watches silently and decides <em>when</em> to step in and <em>what</em> to say to steer the parties toward agreement, without ever taking a side.</p>
 
             <div class="narrow">
                 <div class="scenario-card">
                     <span class="tag">Business / IP &nbsp;·&nbsp; SoCRATES scenario</span>
-                    <h4>The Vanishing App Dispute &mdash; Recognition, Ownership, and Control</h4>
-                    <p>An <strong>ousted co-creator</strong> wants equity and a public title to reflect their foundational role; the <strong>tech company</strong> wants a clean cash exit before an upcoming financing round. Positions are locked, and the clock is ticking.</p>
+                    <h4>The Vanishing App Dispute over Recognition and Ownership</h4>
+                    <p>An <strong>ousted co-creator</strong> wants equity and a public title to reflect their foundational role. The <strong>tech company</strong> wants a clean cash exit before an upcoming financing round. Positions are locked and the clock is ticking.</p>
                 </div>
 
                 <div class="task-panel">
@@ -430,7 +430,7 @@
                     </div>
 
                     <div class="chat-note">
-                        <strong>What happens next.</strong> After the mediator reframes the deadlock from "equity vs. cash" to "recognition without financing risk," the parties move off their fixed positions. By turn 25 they converge on a guaranteed-cash-plus-earnout package &mdash; the topic-localized agreement climbs from <strong style="color:var(--tim)">1 (impasse)</strong> to <strong style="color:var(--eff)">5 (agreement)</strong>. SoCRATES measures exactly this contribution.
+                        <strong>What happens next.</strong> After the mediator reframes the deadlock from "equity vs. cash" to "recognition without financing risk," the parties move off their fixed positions. By turn 25 they converge on a guaranteed cash and earnout package, and the topic-localized agreement climbs from <strong style="color:var(--tim)">1 (impasse)</strong> to <strong style="color:var(--eff)">5 (agreement)</strong>. SoCRATES measures exactly this contribution.
                     </div>
                 </div>
             </div>
@@ -464,17 +464,17 @@
                 <div class="pillar">
                     <span class="pnum" style="background:var(--tim)">1</span>
                     <h3>Agentic Scenario Curation</h3>
-                    <p>LLM agents <em>search</em> the web for real public disputes across eight domains, <em>recast</em> each into a structured scenario, and <em>filter</em> by rejection sampling &mdash; keeping only hard cases that fail to resolve without a mediator.</p>
+                    <p>LLM agents <em>search</em> the web for real public disputes across eight domains, <em>recast</em> each into a structured scenario, and <em>filter</em> by rejection sampling, keeping only hard cases that fail to resolve without a mediator.</p>
                 </div>
                 <div class="pillar">
                     <span class="pnum" style="background:var(--eff)">2</span>
                     <h3>Socio-Cognitive Probing</h3>
-                    <p>Each scenario is perturbed independently along five axes &mdash; strategic posture, party composition, history length, emotional reactivity, and cultural identity &mdash; so any performance shift is attributable to a single axis.</p>
+                    <p>Each scenario is perturbed independently along five axes, namely strategic posture, party composition, history length, emotional reactivity, and cultural identity, so any performance shift is attributable to a single axis.</p>
                 </div>
                 <div class="pillar">
                     <span class="pnum" style="background:var(--cgn)">3</span>
                     <h3>Topic-Localized Evaluation</h3>
-                    <p>For each topic, the evaluator scores agreement only at the turns that actively move it and carries scores forward otherwise, supporting three metrics: consensus gain, intervention timeliness, and effectiveness.</p>
+                    <p>For each topic, the evaluator scores agreement only at the turns that actively move it and carries scores forward otherwise, supporting three metrics (consensus gain, intervention timeliness, and effectiveness).</p>
                 </div>
             </div>
         </section>
@@ -488,22 +488,22 @@
                 <div class="mech-grid" style="margin-bottom: 22px;">
                     <div class="mech-step">
                         <div class="n">1</div>
-                        <div><h4>Localize relevant turns</h4><p>For each topic, the evaluator first selects only the turns where the parties actually negotiate that topic &mdash; e.g. the settlement topic is touched on turns 3, 7, 11, 14, 16, 18, 20, 23&ndash;27, 31, 35, 37, 39, ignoring the rest.</p></div>
+                        <div><h4>Localize relevant turns</h4><p>For each topic, the evaluator first selects only the turns where the parties actually negotiate that topic. For example, the settlement topic is touched on turns 3, 7, 11, 14, 16, 18, 20, 23 to 27, 31, 35, 37, and 39, while the rest are ignored.</p></div>
                     </div>
                     <div class="mech-step">
                         <div class="n">2</div>
-                        <div><h4>Score agreement, carry forward</h4><p>At each relevant turn it rates agreement on a 1&ndash;5 rubric; between relevant turns the last score is carried forward, yielding a clean per-topic consensus trajectory free of off-topic noise.</p></div>
+                        <div><h4>Score agreement, carry forward</h4><p>At each relevant turn it rates agreement on a 1 to 5 rubric. Between relevant turns the last score is carried forward, giving a clean per-topic consensus trajectory free of off-topic noise.</p></div>
                     </div>
                     <div class="mech-step">
                         <div class="n">3</div>
-                        <div><h4>Derive three metrics</h4><p>From the trajectory: <strong style="color:var(--cgn)">consensus gain</strong> (overall closure of the agreement gap), <strong style="color:var(--tim)">intervention timeliness</strong> (when the mediator acts relative to escalation), and <strong style="color:var(--eff)">intervention effectiveness</strong> (how much each intervention shifts consensus).</p></div>
+                        <div><h4>Derive three metrics</h4><p>From the trajectory we derive <strong style="color:var(--cgn)">consensus gain</strong> (overall closure of the agreement gap), <strong style="color:var(--tim)">intervention timeliness</strong> (when the mediator acts relative to escalation), and <strong style="color:var(--eff)">intervention effectiveness</strong> (how much each intervention shifts consensus).</p></div>
                     </div>
                 </div>
 
                 <div class="viz-card">
-                    <h3>Worked example: scoring one topic, turn by turn</h3>
-                    <p>A real negotiation jumps between several topics at once. To measure agreement on just <strong>one</strong> of them (here, the settlement), the evaluator reads the whole conversation but <strong>only scores the turns that actually discuss that topic</strong> &mdash; the <strong style="color:var(--cgn)">colored</strong> cells in the strip below &mdash; and <strong>skips the rest</strong> (the <strong style="color:#94a3b8">grey</strong> cells). That is what <em>topic-localized</em> means: no off-topic turns blur the signal.</p>
-                    <p style="margin-top:8px;">The line then shows agreement on this single topic over time, from <strong style="color:var(--tim)">1 (impasse)</strong> to <strong style="color:var(--eff)">5 (agreement)</strong> &mdash; it only updates on a scored turn and stays flat in between. Notice the jump right after the <strong style="color:var(--eff)">mediator steps in</strong> (turns 13 &amp; 15, &#9878;).</p>
+                    <h3>Scoring one topic, step by step</h3>
+                    <p>A real negotiation jumps between several topics at once. To measure agreement on just <strong>one</strong> of them (here, the settlement), the evaluator reads the whole conversation but <strong>only scores the turns that actually discuss that topic</strong>, the <strong style="color:var(--cgn)">colored</strong> cells in the strip below, and <strong>skips the rest</strong> (the <strong style="color:#94a3b8">grey</strong> cells). That is what <em>topic-localized</em> means. No off-topic turns blur the signal.</p>
+                    <p style="margin-top:8px;">The line then shows agreement on this single topic over time, from <strong style="color:var(--tim)">1 (impasse)</strong> to <strong style="color:var(--eff)">5 (agreement)</strong>. It only updates on a scored turn and stays flat in between. The score jumps right after the <strong style="color:var(--eff)">mediator steps in</strong> (turns 13 and 15).</p>
                     <div class="viz-scroll"><svg id="traj-chart"></svg></div>
                     <div class="viz-legend" style="justify-content:center; gap:16px; margin-top:8px;">
                         <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:13px; height:13px; border-radius:3px; background:#e9edf2; display:inline-block;"></span>off-topic turn (skipped)</span>
@@ -530,7 +530,7 @@
         <!-- ===== Leaderboard ===== -->
         <section id="leaderboard">
             <div class="section-title">Leaderboard</div>
-            <p class="section-sub">Eight LLM mediators, each run on 600 scenario&ndash;condition pairs (4,800 runs total). We report <strong style="color:var(--tim)">Timeliness</strong>, <strong style="color:var(--eff)">Effectiveness</strong>, and <strong style="color:var(--cgn)">Consensus Gain</strong>. Click a header to sort.</p>
+            <p class="section-sub">Eight LLM mediators, each run on all 600 scenario and condition combinations (4,800 runs total). We report <strong style="color:var(--tim)">Timeliness</strong>, <strong style="color:var(--eff)">Effectiveness</strong>, and <strong style="color:var(--cgn)">Consensus Gain</strong>. Click a header to sort.</p>
 
             <div class="narrow" style="position:relative;">
                 <div style="font-weight:800; color:#1f2937; margin:0 0 10px 0;">Core Metrics</div>
@@ -593,7 +593,7 @@
             <div class="narrow">
                 <div class="finding">
                     <div class="head"><span class="n">01</span><h3>Mediation is hard, and scale alone does not solve it</h3></div>
-                    <p>Average consensus gain caps at <strong>34.4</strong>; no mediator clears half the unmediated gap in any domain. <span class="tag">General capability does not directly translate to mediation.</span></p>
+                    <p>Average consensus gain caps at <strong>34.4</strong>, and no mediator clears half the unmediated gap in any domain. <span class="tag">General capability does not directly translate to mediation.</span></p>
                 </div>
                 <hr class="dash">
                 <div class="finding">
@@ -616,8 +616,8 @@
                 <p class="section-sub">The five axes let us pinpoint <em>which</em> ability constrains each mediator, rather than reading a single aggregate score.</p>
 
                 <div class="fig-block">
-                    <div class="fhead"><span class="ic" style="background:var(--cgn)"><i class="fa-solid fa-chart-pie"></i></span><h4>Where each mediator is strong &mdash; and weak</h4></div>
-                    <p>Each mediator's consensus gain is profiled across the general condition and the five axes; a larger enclosed area means a more well-rounded mediator. On four of the five axes the area grows with model capability, yet <strong>every mediator collapses on at least one axis</strong>. Even two top-tier models with similar overall scores differ in <em>where</em> they fail &mdash; GPT-5.4-mini and DeepSeek-V3.2 lose far more under multi-state tracking than Gemini-3.1-FL and Qwen3-235B. Mediation competence is a profile, not a single number.</p>
+                    <div class="fhead"><span class="ic" style="background:var(--cgn)"><i class="fa-solid fa-chart-pie"></i></span><h4>Where each mediator is strong and weak</h4></div>
+                    <p>Each mediator's consensus gain is profiled across the general condition and the five axes, where a larger enclosed area means a more well-rounded mediator. On four of the five axes the area grows with model capability, yet <strong>every mediator collapses on at least one axis</strong>. Even two top-tier models with similar overall scores differ in <em>where</em> they fail. GPT-5.4-mini and DeepSeek-V3.2 lose far more under multi-state tracking than Gemini-3.1-FL and Qwen3-235B. Mediation competence is a profile, not a single number.</p>
                     <figure style="margin-top:6px;">
                         <img src="static/img/radar.png" alt="Socio-cognitive radar">
                         <figcaption><strong>Figure 2.</strong> Mediator adaptation across the general condition and the five socio-cognitive axes, measured by consensus gain.</figcaption>
@@ -625,8 +625,8 @@
                 </div>
 
                 <div class="fig-block">
-                    <div class="fhead"><span class="ic" style="background:var(--tim)"><i class="fa-solid fa-arrow-trend-down"></i></span><h4>How much each axis hurts: strategy, emotion, culture</h4></div>
-                    <p>Here we vary one axis at a time and measure the change from the neutral &ldquo;general&rdquo; condition (negative = worse). <strong>Strategy</strong> is the sharpest stress test: every non-collaborative posture lowers consensus gain, with the steepest drops under <em>Competing</em> and <em>Accommodating</em> &mdash; and the strongest overall model, Qwen3-235B, falls the most. <strong>Emotion</strong> degrades every mediator once both parties are reactive. <strong>Culture</strong> causes small but systematic declines as cultural distance from U.S. norms grows.</p>
+                    <div class="fhead"><span class="ic" style="background:var(--tim)"><i class="fa-solid fa-arrow-trend-down"></i></span><h4>How strategy, emotion, and culture each take a toll</h4></div>
+                    <p>Here we vary one axis at a time and measure the change from the neutral &ldquo;general&rdquo; condition, where negative means worse. <strong>Strategy</strong> is the sharpest stress test. Every non-collaborative posture lowers consensus gain, with the steepest drops under <em>Competing</em> and <em>Accommodating</em>, and the strongest overall model, Qwen3-235B, falls the most. <strong>Emotion</strong> degrades every mediator once both parties are reactive. <strong>Culture</strong> causes small but systematic declines as cultural distance from U.S. norms grows.</p>
                     <figure style="margin-top:6px;">
                         <img src="static/img/shift.png" alt="Strategy, emotion, culture shifts">
                         <figcaption><strong>Figure 3.</strong> Consensus gain shift from the general condition along (a) strategic posture, (b) emotional reactivity, and (c) cultural identity. Negative values indicate degradation.</figcaption>
@@ -635,7 +635,7 @@
 
                 <div class="fig-block">
                     <div class="fhead"><span class="ic" style="background:var(--eff)"><i class="fa-solid fa-clock"></i></span><h4>When to intervene depends on the situation</h4></div>
-                    <p>Plotting intervention effectiveness over the course of a conversation shows that the <strong>best moment to step in moves with the condition</strong>. For strategy and emotion, effectiveness peaks <em>early</em> &mdash; stances and feelings must be reframed before they harden. For multi-state tracking and long-context, it peaks <em>late</em>, when enough context has built up for summarizing to help. Stronger mediators time their interventions to each window; weaker ones trace flat curves and miss the moment.</p>
+                    <p>Plotting intervention effectiveness over the course of a conversation shows that the <strong>best moment to step in moves with the condition</strong>. For strategy and emotion, effectiveness peaks <em>early</em>, because stances and feelings must be reframed before they harden. For multi-state tracking and long-context, it peaks <em>late</em>, when enough context has built up for summarizing to help. Stronger mediators time their interventions to each window, while weaker ones trace flat curves and miss the moment.</p>
                     <figure style="margin-top:6px;">
                         <img src="static/img/timing.png" alt="Intervention timing">
                         <figcaption><strong>Figure 4.</strong> Intervention effectiveness over normalized conversation progress, for the general condition and each hard socio-cognitive condition.</figcaption>
@@ -659,14 +659,17 @@
                     <div style="font-size:1.2rem; font-weight:800; color:#1f2937;">BibTeX</div>
                     <button id="copy-bib" class="copy-btn">Copy</button>
                 </div>
-                <pre class="bib" id="bib-block">@article{yun2026socrates,
+                <pre class="bib" id="bib-block"> To be filled
+                </pre>
+                <!-- <pre class="bib" id="bib-block">
+                    @article{yun2026socrates,
   title={SoCRATES: Towards Reliable Automated Evaluation of Proactive LLM
          Mediation across Domains and Socio-cognitive Variations},
   author={Yun, Taewon and Park, Hyeonseong and Choi, Jeonghwan and
           Park, Hayoon and Choi, Yeeun and Song, Hwanjun},
   journal={arXiv preprint},
   year={2026}
-}</pre>
+}</pre> -->
             </div>
         </section>
     </main>
@@ -736,7 +739,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .call(a=>a.selectAll('text').style('font-size','11px').style('fill','#475569'));
         g.append('g').call(d3.axisLeft(y).ticks(5)).call(a=>a.select('.domain').remove())
             .call(a=>a.selectAll('text').style('font-size','11px').style('fill','#475569'));
-        g.append('text').attr('x',-ph/2).attr('y',-32).attr('transform','rotate(-90)').attr('text-anchor','middle').style('font-size','11px').style('fill','#64748b').text('Agreement (1–5)');
+        g.append('text').attr('x',-ph/2).attr('y',-32).attr('transform','rotate(-90)').attr('text-anchor','middle').style('font-size','11px').style('fill','#64748b').text('Agreement (1 to 5)');
         g.append('text').attr('x',iw/2).attr('y',ph+32).attr('text-anchor','middle').style('font-size','11px').style('fill','#64748b').text('Conversation turn');
         mediator.forEach(t=>{ g.append('line').attr('x1',x(t)).attr('x2',x(t)).attr('y1',0).attr('y2',ph).attr('stroke','#6BAE5A').attr('stroke-dasharray','4 3').attr('stroke-width',1.4).attr('opacity',0.75); });
         const line=d3.line().x(d=>x(d[0])).y(d=>y(d[1])).curve(d3.curveStepAfter);
@@ -753,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('#core-lb tbody tr').forEach(r=>{ if(r.classList.contains('row-avg'))return; const c=r.children[0]; const cl=c.cloneNode(true); cl.querySelectorAll('.badge').forEach(b=>b.remove());
             data.push({name:cl.textContent.trim(), type:c.querySelector('.badge.closed')?'closed':'open', val:parseFloat(r.children[3].textContent)}); });
         data.sort((a,b)=>b.val-a.val);
-        const palette={'GPT-5.4-mini':'#2f4a63','Gemini-3.1-Flash-Lite':'#4F81BD','DeepSeek-V3.2':'#6BAE5A','Qwen3-235B':'#E0A33E','Gemma-4-26B':'#C0504D','Nemotron-3-120B':'#8E6FB0','Solar-Pro-3':'#3FB0A6','Qwen3-30B':'#D9748B'};
+        const palette={'Gemini-3.1-Flash-Lite':'#D41C00','GPT-5.4-mini':'#FE6256','DeepSeek-V3.2':'#e08214','Qwen3-235B':'#fdb863','Nemotron-3-120B':'#058403','Solar-Pro-3':'#88D489','Gemma-4-26B':'#0868E0','Qwen3-30B':'#2599FF'};
         const barColor=n=>palette[n]||'#4F81BD';
         const svg=d3.select('#cg-bar'); const cw=svg.node().parentNode.getBoundingClientRect().width||620;
         const m={top:14,right:40,bottom:32,left:168}, rb=34, width=Math.max(520,Math.floor(cw)), height=m.top+m.bottom+data.length*rb;
