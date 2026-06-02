@@ -1,634 +1,687 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <style>
-            pre, code { font-size: 16px; }
-        </style>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SoCRATES: Reliable Automated Evaluation of Proactive LLM Mediation</title>
+    <link rel="icon" type="image/x-icon" href="./static/img/logo.png">
 
-        <title>SoCRATES: Reliable Automated Evaluation of Proactive LLM Mediation</title>
-        <link rel="icon" type="image/x-icon" href="./static/img/logo.png">
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;900&display=swap" rel="stylesheet">
 
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    :root {
+        --ink: #1a2f45;
+        --navy: #2f4a63;
+        --tim: #C0504D;   /* timeliness  */
+        --eff: #6BAE5A;   /* effectiveness */
+        --cgn: #4F81BD;   /* consensus gain */
+        --line: #e2e8f0;
+        --nav-h: 62px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+        margin: 0;
+        font-family: 'Source Sans 3', 'Helvetica Neue', Arial, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        color: #2d3748;
+        line-height: 1.65;
+        background: #fff;
+    }
+    a { color: var(--cgn); }
+    img { max-width: 100%; }
 
-        <!-- JS Libraries -->
-        <script src="./static/js/distill_template.v2.js"></script>
-        <script src="https://d3js.org/d3.v5.min.js"></script>
+    /* ===== Sticky lab nav ===== */
+    .navbar {
+        position: sticky; top: 0; z-index: 1000;
+        height: var(--nav-h);
+        background: rgba(26, 47, 69, 0.96);
+        backdrop-filter: saturate(140%) blur(8px);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .navbar-inner {
+        max-width: 1180px; height: 100%; margin: 0 auto; padding: 0 24px;
+        display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+    .nav-logo img { height: 40px; width: 40px; object-fit: contain; border-radius: 9px; background:#fff; padding: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+    .nav-logo .lab-placeholder {
+        height: 38px; width: 38px; border-radius: 8px;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg,#6BAE5A,#4F81BD); color:#fff;
+        font-weight: 900; font-size: 1rem; letter-spacing: 0.5px;
+    }
+    .nav-logo .lab-name { color: #fff; font-weight: 700; font-size: 1.04rem; letter-spacing: 0.3px; }
+    .nav-links { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+    .nav-links a {
+        color: #cfe0ef; text-decoration: none; font-size: 0.92rem; font-weight: 600;
+        padding: 8px 13px; border-radius: 8px; transition: background 0.15s, color 0.15s;
+    }
+    .nav-links a:hover { background: rgba(255,255,255,0.10); color: #fff; }
+    @media (max-width: 880px) {
+        .nav-links { display: none; }
+        .nav-logo .lab-name { font-size: 0.95rem; }
+    }
 
-        <!-- Stylesheets -->
-        <link rel="stylesheet" href="./static/css/style.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    /* ===== Hero ===== */
+    .hero {
+        background: linear-gradient(135deg, #355c7d 0%, #24415b 45%, #1a2f45 100%);
+        color: #FEEFC3; text-align: center; padding: 44px 24px 40px 24px;
+    }
+    .hero-inner { max-width: 980px; margin: 0 auto; }
+    .hero img.logo {
+        height: 124px; width: auto; margin: 0 auto 14px auto; display: block;
+        border-radius: 18px; box-shadow: 0 6px 22px rgba(0,0,0,0.28);
+    }
+    .hero h1 {
+        margin: 0 0 6px 0; font-size: 3.0rem; letter-spacing: 0.05em; color: #8be9ff;
+        text-shadow: 0 0 22px rgba(56,189,248,0.30);
+    }
+    .hero h2 {
+        margin: 0 auto; font-size: 1.46rem; font-weight: 600; color: #FEEFC3;
+        max-width: 90%; line-height: 1.4;
+    }
+    .authors { margin: 22px auto 4px auto; font-size: 1.08rem; line-height: 1.7; }
+    .affil { font-size: 0.95rem; opacity: 0.92; margin: 2px 0; }
+    .emails { font-size: 0.9rem; opacity: 0.85; margin: 2px 0; }
+    .emails a, .corr { color: #ffe099; text-decoration: none; }
+    .corr { font-size: 0.84rem; opacity: 0.8; font-style: italic; }
+    .hero-overview {
+        text-align: left; margin: 18px auto 4px auto; max-width: 860px;
+        color: #e6f4ff; font-size: 1.16rem; line-height: 1.7;
+    }
+    .hero-overview b { color: #fff; }
+    .hero-overview .hl { color: #8be9ff; font-weight: 700; }
 
-        <!-- KaTeX -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" crossorigin="anonymous">
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js" crossorigin="anonymous"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    .btn-row { margin-top: 22px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: flex-start; }
+    .btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: #FFF0CE; color: #1a2f45; border: 2px solid rgba(255,193,7,0.5);
+        border-radius: 20px; padding: 10px 20px; text-decoration: none; font-weight: 700;
+        transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+    .btn:hover { background: #EAB682; color: #fff; transform: translateY(-1px); }
+    .btn img { height: 1em; }
+    .btn-wrap { display: inline-flex; flex-direction: column; align-items: center; }
+    .btn-sub { margin-top: 4px; color: #ffd9a0; font-size: 0.82rem; font-weight: 700; }
 
-        <!-- Medium Zoom -->
-        <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-        <script defer src="./static/js/medium-zoom.min.js"></script>
-        <script defer src="./static/js/zoom.js"></script>
+    /* ===== Layout ===== */
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+    .narrow { max-width: 880px; margin-left: auto; margin-right: auto; }
+    section { scroll-margin-top: calc(var(--nav-h) + 14px); }
+    .section-title {
+        font-size: 1.95rem; font-weight: 900; text-align: center; color: var(--ink);
+        margin: 46px 0 8px 0; letter-spacing: 0.02em;
+    }
+    .section-sub {
+        text-align: center; color: #5b6572; font-size: 1.08rem;
+        max-width: 760px; margin: 0 auto 22px auto;
+    }
+    figure { margin: 18px 0; }
+    figure img { display: block; width: 100%; border-radius: 10px; }
+    figcaption {
+        font-size: 0.98rem; color: #5b6572; line-height: 1.55; margin-top: 10px; text-align: left;
+    }
+    .body-text { font-size: 1.12rem; line-height: 1.75; color: #374151; }
 
-        <!-- Leaderboard Styles -->
-        <style>
-        .leaderboard-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            font-size: 14px;
-            margin-bottom: 28px;
-        }
-        .leaderboard-container { position: relative; }
-        .leaderboard-table thead { background: #2f4a63; color: white; }
-        .leaderboard-table th {
-            padding: 13px 10px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 12.5px;
-            letter-spacing: 0.02em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-        .sortable-header { cursor: pointer; user-select: none; }
-        .sortable-header .sort-indicator {
-            position: absolute; right: 6px; top: 50%; font-size: 12px;
-            line-height: 1; transform: translateY(-50%); color: #a0aec0;
-        }
-        .sortable-header.active .sort-indicator { color: white; }
-        .leaderboard-table td {
-            padding: 11px 10px;
-            border-bottom: 1px solid #e2e8f0;
-            color: #4a5568;
-            text-align: center;
-        }
-        .leaderboard-table tbody tr { transition: background-color 0.15s ease; }
-        .leaderboard-table tbody tr:hover { background-color: #f7fafc; }
-        .leaderboard-table tbody tr:nth-child(even) { background-color: #fafafa; }
-        .leaderboard-table td:first-child {
-            font-weight: 600; text-align: left; color: #2d3748; padding-left: 18px;
-        }
-        .leaderboard-table td.avg-cell { font-weight: 700; color: #2d3748; background: #eef3f8; }
-        .leaderboard-table th.avg-head { background: #24415b; }
-        .human-level-row { background: #fffbeb85 !important; font-weight: 600; }
-        .top-performer { background: #f0fdf494 !important; }
-        .top-performer td:first-child::before { content: '🥇 '; }
-        .best-score { font-weight: 700; text-decoration: underline; text-decoration-color: #cbd5e0; text-underline-offset: 2px; }
-        .neg-cell { color: #c0504d; }
-        .model-badge {
-            display: inline-block; padding: 2px 6px; border-radius: 4px;
-            font-size: 10.5px; font-weight: 500; margin-left: 8px;
-            text-transform: uppercase; letter-spacing: 0.02em;
-        }
-        .proprietary-badge { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e0; }
-        .open-badge { background: #e6fffa; color: #047857; border: 1px solid #a7f3d0; }
+    /* ===== Key points box ===== */
+    .keybox {
+        border: 2px solid #b0c8e0; border-radius: 18px; background: #f5f9fd;
+        padding: 18px 26px; box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+    .keybox ul { margin: 0; padding-left: 22px; font-size: 1.1rem; line-height: 1.75; }
+    .keybox li { margin-bottom: 6px; }
 
-        .section-title {
-            font-size: 1.8em; font-weight: 900; text-align: center; color: #1a2f45;
-            margin: 40px 0 16px 0; letter-spacing: 0.03em;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
-        .narrow { width: 52%; margin-left: auto; margin-right: auto; }
+    /* ===== Pillars ===== */
+    .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .pillar {
+        border: 1px solid #dbe7f0; border-radius: 16px; background: #fff;
+        padding: 20px; box-shadow: 0 4px 14px rgba(15,23,42,0.05);
+    }
+    .pillar .pnum {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 30px; height: 30px; border-radius: 8px; color: #fff; font-weight: 900; margin-bottom: 10px;
+    }
+    .pillar h3 { margin: 4px 0 8px 0; font-size: 1.12rem; color: var(--ink); }
+    .pillar p { margin: 0; color: #4a5568; font-size: 1rem; line-height: 1.55; }
+    @media (max-width: 820px) { .pillar-grid { grid-template-columns: 1fr; } }
 
-        .viz-card {
-            background: linear-gradient(180deg, #ffffff 0%, #f8fbfd 100%);
-            border: 1px solid #dbe7f0; border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-            padding: 18px 22px 12px 22px; margin-bottom: 24px;
-        }
-        .viz-card h3 { margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 800; color: #16202a; }
-        .viz-card p { margin: 0 0 10px 0; color: #52606d; font-size: 0.96rem; line-height: 1.5; }
-        .viz-scroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 6px; }
-        .viz-tooltip {
-            position: absolute; pointer-events: none; background: rgba(15, 23, 42, 0.94);
-            color: #fff; padding: 9px 12px; border-radius: 10px; font-size: 0.86rem;
-            line-height: 1.45; max-width: 220px; box-shadow: 0 10px 28px rgba(15, 23, 42, 0.22);
-            opacity: 0; transform: translateY(6px); transition: opacity 0.16s ease, transform 0.16s ease; z-index: 20;
-        }
-        .viz-legend { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 4px; color: #52606d; font-size: 0.9rem; }
-        .viz-gradient { width: 108px; height: 10px; border-radius: 999px; background: linear-gradient(90deg, #eef3fb 0%, #93b4dd 45%, #2f4a63 100%); }
+    /* ===== Task / dialogue ===== */
+    .scenario-card {
+        border: 1px solid #dbe7f0; border-left: 5px solid var(--navy);
+        background: #f8fbfd; border-radius: 12px; padding: 16px 20px; margin-bottom: 22px;
+    }
+    .scenario-card .tag {
+        display: inline-block; background: var(--navy); color: #fff; font-size: 0.78rem;
+        font-weight: 700; letter-spacing: 0.04em; padding: 2px 10px; border-radius: 999px; margin-bottom: 8px;
+    }
+    .scenario-card h4 { margin: 4px 0 8px 0; font-size: 1.15rem; color: var(--ink); }
+    .scenario-card p { margin: 0; color: #4a5568; font-size: 1.02rem; }
+    .chat { display: flex; flex-direction: column; gap: 12px; }
+    .msg { max-width: 78%; padding: 12px 16px; border-radius: 16px; font-size: 1.02rem; line-height: 1.55; position: relative; }
+    .msg .who { font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; opacity: 0.85; }
+    .msg.left  { align-self: flex-start; background: #eaf1f8; color: #21364a; border-bottom-left-radius: 4px; }
+    .msg.left .who { color: var(--cgn); }
+    .msg.right { align-self: flex-end; background: #fbeceb; color: #4a2a29; border-bottom-right-radius: 4px; }
+    .msg.right .who { color: var(--tim); }
+    .msg.mediator {
+        align-self: center; max-width: 90%; background: #eef7ea; color: #243a1c;
+        border: 1.5px solid #cfe6c2; border-radius: 14px;
+    }
+    .msg.mediator .who { color: var(--eff); display: flex; align-items: center; gap: 6px; justify-content: center; }
+    .msg.mediator .who img { height: 18px; border-radius: 4px; }
+    .turn-no { font-size: 0.72rem; opacity: 0.5; font-weight: 700; margin-left: 6px; }
+    .chat-note { margin-top: 16px; font-size: 1rem; color: #5b6572; background: #f8fafc; border-radius: 10px; padding: 12px 16px; border: 1px dashed #cbd5e1; }
 
-        /* Three-pillar cards */
-        .pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-        .pillar {
-            border: 1px solid #dbe7f0; border-radius: 16px; background: #ffffff;
-            padding: 20px 20px 18px 20px; box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-        }
-        .pillar .pnum {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 30px; height: 30px; border-radius: 8px; color: #fff; font-weight: 900;
-            font-size: 0.95rem; margin-bottom: 10px;
-        }
-        .pillar h3 { margin: 4px 0 8px 0; font-size: 1.12rem; color: #1a2f45; }
-        .pillar p { margin: 0; color: #4a5568; font-size: 0.98rem; line-height: 1.55; }
-        @media (max-width: 820px) {
-            .pillar-grid { grid-template-columns: 1fr; }
-            .narrow { width: 92%; }
-        }
+    /* ===== Tables ===== */
+    .lb {
+        width: 100%; border-collapse: separate; border-spacing: 0; background: #fff;
+        border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        font-size: 14px; margin-bottom: 24px;
+    }
+    .lb thead { background: var(--navy); color: #fff; }
+    .lb th { padding: 12px 9px; text-align: center; font-weight: 600; font-size: 12.5px; position: relative; }
+    .lb th.avg-head { background: #24415b; }
+    .lb td { padding: 11px 9px; border-bottom: 1px solid var(--line); color: #4a5568; text-align: center; }
+    .lb tbody tr:nth-child(even) { background: #fafafa; }
+    .lb tbody tr:hover { background: #f4f8fc; }
+    .lb td:first-child { text-align: left; font-weight: 600; color: #2d3748; padding-left: 16px; }
+    .lb td.avg { font-weight: 700; color: #21364a; background: #eef3f8; }
+    .lb th.avg-head, .lb td.avg { border-left: 1px solid #d6e2ee; }
+    .sortable { cursor: pointer; user-select: none; }
+    .sortable .ind { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #a0aec0; }
+    .sortable.active .ind { color: #fff; }
+    .row-avg { background: #fffbeb85 !important; font-weight: 600; }
+    .row-top { background: #f0fdf494 !important; }
+    .row-top td:first-child::before { content: '🥇 '; }
+    .best { font-weight: 700; text-decoration: underline; text-decoration-color: #9bb9da; text-underline-offset: 2px; }
+    .neg { color: var(--tim); }
+    .badge { display: inline-block; padding: 2px 6px; border-radius: 4px; font-size: 10.5px; font-weight: 600; margin-left: 7px; text-transform: uppercase; }
+    .badge.closed { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e0; }
+    .badge.open { background: #e6fffa; color: #047857; border: 1px solid #a7f3d0; }
+    .badge.ours { background: #eef7ea; color: #3f7a2e; border: 1px solid #cfe6c2; }
 
-        .finding-tag {
-            display: inline-block; background-color: #eef3fb; color: #2f4a63;
-            padding: 2px 10px; border-radius: 10px; font-weight: 700;
-            border: 1px solid #cdddee; margin: 0 3px; vertical-align: middle; font-size: 0.92em;
-        }
-        </style>
-    </head>
+    /* ===== Viz cards ===== */
+    .viz-card {
+        background: linear-gradient(180deg,#fff,#f8fbfd); border: 1px solid #dbe7f0;
+        border-radius: 18px; box-shadow: 0 10px 30px rgba(15,23,42,0.06); padding: 18px 22px 12px 22px; margin-bottom: 22px;
+    }
+    .viz-card h3 { margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 800; color: #16202a; }
+    .viz-card p { margin: 0 0 8px 0; color: #52606d; font-size: 0.96rem; }
+    .viz-scroll { overflow-x: auto; }
+    .viz-legend { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 4px; color: #52606d; font-size: 0.9rem; }
+    .viz-grad { width: 108px; height: 10px; border-radius: 999px; background: linear-gradient(90deg,#f5e9e8,#cfe0ef 50%,#2f4a63); }
+    .viz-tooltip {
+        position: absolute; pointer-events: none; background: rgba(15,23,42,0.94); color: #fff;
+        padding: 9px 12px; border-radius: 10px; font-size: 0.86rem; line-height: 1.45; max-width: 230px;
+        box-shadow: 0 10px 28px rgba(15,23,42,0.22); opacity: 0; transform: translateY(6px);
+        transition: opacity 0.16s, transform 0.16s; z-index: 50;
+    }
 
-    <body>
-        <div class="header-wrapper">
-            <div class="header-container" id="header-container">
-                <div class="header-content" style="width: 100%; text-align: center;">
-                    <img src="./static/img/logo.png" alt="SoCRATES logo" style="height: 132px; width: auto; margin: 0 auto 14px auto; display: block; border-radius: 18px; box-shadow: 0 6px 22px rgba(0,0,0,0.28);">
-                    <div class="responsive-header">
-                        <h1 style="text-align: center; color: #8be9ff; text-shadow: 0 0 22px rgba(56, 189, 248, 0.30); font-size: 3.0rem; margin: 0 0 6px 0; letter-spacing: 0.04em;">SoCRATES</h1>
-                        <h2 style="text-align: center; color: #FEEFC3; font-size: 1.5rem; font-weight: 600; margin: 0 auto; max-width: 80%; line-height: 1.4;">Towards Reliable Automated Evaluation of Proactive LLM Mediation<br>across Domains and Socio-cognitive Variations</h2>
-                    </div>
+    /* ===== Evaluator mechanism ===== */
+    .mech-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    .mech-step { display: flex; gap: 14px; align-items: flex-start; }
+    .mech-step .n {
+        flex: 0 0 auto; width: 34px; height: 34px; border-radius: 9px; background: var(--cgn); color: #fff;
+        font-weight: 900; display: flex; align-items: center; justify-content: center;
+    }
+    .mech-step h4 { margin: 3px 0 4px 0; font-size: 1.08rem; color: var(--ink); }
+    .mech-step p { margin: 0; color: #4a5568; font-size: 1rem; }
 
-                    <div class="header-authors" style="margin: 22px auto 6px auto; color: #FEEFC3; line-height: 1.8;">
-                        <p style="margin: 0 0 6px 0; font-size: 1.08em;">
-                            Taewon Yun&ensp; Hyeonseong Park&ensp; Jeonghwan Choi&ensp; Hayoon Park&ensp; Yeeun Choi&ensp; Hwanjun Song<sup>&dagger;</sup>
-                        </p>
-                        <p style="margin: 0 0 4px 0; font-size: 0.95em; opacity: 0.92;">
-                            Korea Advanced Institute of Science and Technology (KAIST)
-                        </p>
-                        <p style="margin: 0; font-size: 0.9em; opacity: 0.85;">
-                            <a href="mailto:ytaewon0415@kaist.ac.kr" style="color: #ffe099; text-decoration: none;">ytaewon0415@kaist.ac.kr</a> &nbsp;·&nbsp;
-                            <a href="mailto:songhwanjun@kaist.ac.kr" style="color: #ffe099; text-decoration: none;">songhwanjun@kaist.ac.kr</a>
-                        </p>
-                        <p style="margin: 6px 0 0 0; font-size: 0.85em; opacity: 0.8; font-style: italic;">
-                            <sup>&dagger;</sup> Corresponding Author
-                        </p>
-                    </div>
+    /* ===== Findings ===== */
+    .finding { margin-bottom: 26px; }
+    .finding .head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .finding .head .n { background: var(--navy); color: #fff; padding: 2px 8px; font-size: 0.78rem; font-weight: 900; border-radius: 4px; }
+    .finding .head h3 { margin: 0; font-size: 1.22rem; color: var(--ink); }
+    .finding p { margin: 0; color: #444; font-size: 1.08rem; }
+    .tag {
+        display: inline-block; background: #eef3fb; color: var(--navy); padding: 1px 9px; border-radius: 9px;
+        font-weight: 700; border: 1px solid #cdddee; font-size: 0.92em;
+    }
+    hr.dash { border: 0; border-top: 1px dashed #ddd; margin: 26px 0; }
 
-                    <p style="width: 75%; margin: 16px auto 8px auto; text-align: left; color: #e6f4ff; font-size: 1.18rem; line-height: 1.7; font-family: 'Source Sans 3', 'Helvetica Neue', Arial, sans-serif;">
-                        <strong style="color:#ffffff;">Overview.</strong> <strong style="color: #8be9ff;">SoCRATES</strong> is a benchmark for evaluating LLMs as <strong style="color:#ffffff;">proactive mediators</strong> of social conflict, where mediation unfolds as a real-time trajectory shaped by disputants' shifting emotions, intentions, and context. An agentic pipeline grounds every scenario in a <strong style="color:#ffffff;">real public dispute</strong> across <strong style="color:#ffffff;">eight conflict domains</strong>, five <strong style="color:#ffffff;">socio-cognitive axes</strong> probe how mediators adapt to strategic posture, party composition, history length, emotional reactivity, and cultural identity, and a <strong style="color:#ffffff;">topic-localized evaluator</strong> scores each topic only on the turns that advance it. Benchmarking eight frontier LLMs, even the strongest mediator closes only about a third of the unmediated consensus gap, with performance varying sharply by socio-cognitive axis.
-                    </p>
+    /* ===== BibTeX ===== */
+    pre.bib {
+        margin: 0; padding: 18px 20px; border-radius: 14px; background: #f8fafc; border: 1px solid #dbe7f0;
+        color: #1f2937; font-size: 0.95rem; line-height: 1.65; white-space: pre-wrap; text-align: left;
+        font-family: 'Courier New', monospace;
+    }
+    .copy-btn { border: 1px solid #cbd5e1; background: #fff; color: #334155; border-radius: 999px; padding: 7px 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer; }
+    footer { text-align: center; color: #94a3b8; font-size: 0.9rem; padding: 30px 0 40px 0; }
+    </style>
+</head>
+<body>
 
-                    <div class="button-container">
-                        <a href="#" class="button paper-link" target="_blank">
-                            <span class="icon is-small"><i class="fa-solid fa-file-pdf"></i></span>
-                            <span>Paper (arXiv)</span>
-                        </a>
-                        <div class="button-with-subtext">
-                            <a href="https://github.com/" class="button" target="_blank">
-                                <span class="icon is-small"><i class="fa-brands fa-github"></i></span>
-                                <span>Code (GitHub)</span>
-                            </a>
-                            <span class="button-subtext">Coming soon!</span>
-                        </div>
-                        <div class="button-with-subtext">
-                            <a href="https://huggingface.co/" class="button" target="_blank">
-                                <span class="icon is-small"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="Hugging Face logo" style="height: 1em;"></span>
-                                <span>SoCRATES</span>
-                            </a>
-                            <span class="button-subtext">Coming soon!</span>
-                        </div>
-                        <a href="#leaderboard" class="button">
-                            <span class="icon is-small"><i class="fa-solid fa-ranking-star"></i></span>
-                            <span>Leaderboard</span>
-                        </a>
-                    </div>
+    <!-- ===== Nav ===== -->
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="nav-logo" href="#top">
+                <img src="./static/img/lab-logo.png" alt="Data Intelligence System Lab">
+                <span class="lab-name">Data Intelligence System Lab</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#task">Task</a></li>
+                <li><a href="#method">Method</a></li>
+                <li><a href="#evaluator">Evaluator</a></li>
+                <li><a href="#leaderboard">Leaderboard</a></li>
+                <li><a href="#findings">Findings</a></li>
+                <li><a href="#bibtex">BibTeX</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== Hero ===== -->
+    <div class="hero" id="top">
+        <div class="hero-inner">
+            <img class="logo" src="./static/img/logo.png" alt="SoCRATES logo">
+            <h1>SoCRATES</h1>
+            <h2>Towards Reliable Automated Evaluation of Proactive LLM Mediation<br>across Domains and Socio-cognitive Variations</h2>
+
+            <div class="authors">
+                Taewon Yun&ensp; Hyeonseong Park&ensp; Jeonghwan Choi&ensp; Hayoon Park&ensp; Yeeun Choi&ensp; Hwanjun Song<sup>&dagger;</sup>
+            </div>
+            <p class="affil">Korea Advanced Institute of Science and Technology (KAIST)</p>
+            <p class="emails">
+                <a href="mailto:ytaewon0415@kaist.ac.kr">ytaewon0415@kaist.ac.kr</a> &nbsp;·&nbsp;
+                <a href="mailto:songhwanjun@kaist.ac.kr">songhwanjun@kaist.ac.kr</a>
+            </p>
+            <p class="corr"><sup>&dagger;</sup> Corresponding Author</p>
+
+            <p class="hero-overview">
+                <b>Overview.</b> <span class="hl">SoCRATES</span> is a benchmark for evaluating LLMs as <b>proactive mediators</b> of social conflict, where mediation unfolds as a real-time trajectory shaped by disputants' shifting emotions, intentions, and context. An agentic pipeline grounds every scenario in a <b>real public dispute</b> across <b>eight conflict domains</b>, five <b>socio-cognitive axes</b> probe how mediators adapt, and a <b>topic-localized evaluator</b> scores each topic only on the turns that advance it. Even the strongest of eight frontier LLMs closes only about a third of the unmediated consensus gap, with performance varying sharply by socio-cognitive axis.
+            </p>
+
+            <div class="btn-row">
+                <a class="btn" href="#" target="_blank"><i class="fa-solid fa-file-pdf"></i> Paper (arXiv)</a>
+                <div class="btn-wrap">
+                    <a class="btn" href="https://github.com/" target="_blank"><i class="fa-brands fa-github"></i> Code (GitHub)</a>
+                    <span class="btn-sub">Coming soon!</span>
                 </div>
+                <div class="btn-wrap">
+                    <a class="btn" href="https://huggingface.co/" target="_blank"><img src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg" alt="HF"> SoCRATES</a>
+                    <span class="btn-sub">Coming soon!</span>
+                </div>
+                <a class="btn" href="#leaderboard"><i class="fa-solid fa-ranking-star"></i> Leaderboard</a>
             </div>
         </div>
+    </div>
 
-    <d-article>
+    <main class="container">
 
-        <!-- Overview figure -->
-        <div class="section-title">Overview</div>
-        <d-figure id="fig-teaser" layout="l-page">
-            <figure style="width: 100%; margin: 0 auto;">
-                <img data-zoomable="" draggable="false" src="static/img/overview.png" alt="SoCRATES overview" style="width: 100%; max-width: 100%; display: block;">
+        <!-- ===== Overview ===== -->
+        <section id="overview">
+            <div class="section-title">Overview</div>
+            <figure>
+                <img src="static/img/overview.png" alt="SoCRATES overview">
                 <figcaption>
                     <strong>Figure 1.</strong> Overview of <strong>SoCRATES</strong>. <em>Agentic scenario curation</em> grounds every scenario in a real-world conflict; <em>socio-cognitive probing</em> expands each scenario along five axes to expose where each mediator fails; and <em>topic-localized evaluation</em> scores each trajectory with three metrics to quantify the mediator's contribution.
                 </figcaption>
             </figure>
-        </d-figure>
+        </section>
 
-        <!-- Abstract -->
-        <div class="section-title">Abstract</div>
-        <p class="text abstract">
-            Evaluating LLM mediators remains challenging, as mediation unfolds as a real-time trajectory shaped by disputants' shifting emotions, intentions, and context. Existing testbeds rely on a few expert-authored domains, vary mainly strategic posture, and score every turn against every topic, introducing off-topic noise. We introduce <span style="font-weight: 900; color: #2f4a63;">SoCRATES</span>, a benchmark for evaluating proactive LLM mediators in realistic, multi-domain testbeds. It constructs scenarios from real conflicts through an agentic pipeline across eight domains, probes five socio-cognitive adaptation axes (strategic posture, party composition, history length, emotional reactivity, and cultural identity), and scores each topic only on the turns that advance it via a topic-localized evaluator. The evaluator reaches 0.82 alignment with human experts, more than doubling a per-turn baseline. Benchmarking eight frontier LLMs, we find that even the strongest mediator closes only about a third of the unmediated consensus gap under diverse and realistic testbeds, with performance varying sharply by socio-cognitive axis, highlighting that progress lies in social adaptation to diverse conditions.
-            <br>
-        </p>
+        <!-- ===== Task ===== -->
+        <section id="task">
+            <div class="section-title">The Task: Proactive Mediation</div>
+            <p class="section-sub">Two parties argue over a real dispute, turn by turn. A <strong style="color:var(--eff)">mediator</strong> watches silently and decides <em>when</em> to step in and <em>what</em> to say to steer the parties toward agreement &mdash; without ever taking a side.</p>
 
-        <!-- Key Points -->
-        <div class="section-title">Key Contributions</div>
-        <div class="narrow" style="margin-bottom: 28px;">
-            <div style="border: 2px solid #b0c8e0; border-radius: 18px; background-color: #f5f9fd; padding: 18px 24px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);">
-                <ul style="margin: 0; padding-left: 22px; font-size: 1.12rem; line-height: 1.7; color: #333333;">
-                    <li>A unified, automated framework for evaluating proactive LLM mediation that integrates <strong>agentic scenario curation</strong>, <strong>socio-cognitive probing</strong>, and <strong>topic-localized evaluation</strong> in a single pipeline.</li>
-                    <li>A <strong>topic-localized evaluator</strong> that scores mediator trajectories along three real-time metrics and correlates with expert judgments at Pearson <em>r</em> = 0.82.</li>
+            <div class="narrow">
+                <div class="scenario-card">
+                    <span class="tag">Business / IP &nbsp;·&nbsp; SoCRATES scenario</span>
+                    <h4>The Vanishing App Dispute &mdash; Recognition, Ownership, and Control</h4>
+                    <p>An <strong>ousted co-creator</strong> wants equity and a public title to reflect their foundational role; the <strong>tech company</strong> wants a clean cash exit before an upcoming financing round. Positions are locked, and the clock is ticking.</p>
+                </div>
+
+                <div class="chat">
+                    <div class="msg left">
+                        <div class="who">Ousted Co-Creator <span class="turn-no">turn 11</span></div>
+                        A cash-only deal severs my connection to the company's future. For a full IP assignment and the &lsquo;Co-Creator&rsquo; title, I need some equity &mdash; even a small, non-voting stake. Could we discuss 3% equity plus a significant cash component?
+                    </div>
+                    <div class="msg right">
+                        <div class="who">Tech Company <span class="turn-no">turn 12</span></div>
+                        The $140M cash offer is a definitive valuation of your contribution, delivered now. Introducing any equity, even non-voting, creates complexity that risks the entire financing and the certainty we both need.
+                    </div>
+                    <div class="msg mediator">
+                        <div class="who"><img src="static/img/logo.png" alt="">Mediator intervenes <span class="turn-no">turn 13</span></div>
+                        It sounds like the real issue is not just economics, but what form of recognition can feel meaningful without creating financing risk. Could you each state your bottom line for a hybrid package &mdash; how much equity, how much cash, and what title?
+                    </div>
+                    <div class="msg left">
+                        <div class="who">Ousted Co-Creator <span class="turn-no">turn 14</span></div>
+                        My bottom line: I'll assign all IP and accept the &lsquo;Co-Creator&rsquo; title in a joint statement. In return, 3% non-voting equity, immediately vested, plus a substantial cash component &mdash; say $45M.
+                    </div>
+                    <div class="msg mediator">
+                        <div class="who"><img src="static/img/logo.png" alt="">Mediator intervenes <span class="turn-no">turn 15</span></div>
+                        We have a concrete package on the table: 3% vested non-voting equity plus $45M, the Co-Creator title, and full IP assignment. Could the company respond specifically to that structure?
+                    </div>
+                </div>
+                <div class="chat-note">
+                    <strong>What happens next.</strong> After the mediator reframes the deadlock from "equity vs. cash" to "recognition without financing risk," the parties move off their fixed positions. By turn 25 they converge on a guaranteed-cash-plus-earnout package &mdash; the topic-localized agreement climbs from <strong style="color:var(--tim)">1 (impasse)</strong> to <strong style="color:var(--eff)">5 (agreement)</strong>. SoCRATES measures exactly this contribution.
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Abstract ===== -->
+        <section id="abstract">
+            <div class="section-title">Abstract</div>
+            <p class="body-text narrow">
+                Evaluating LLM mediators remains challenging, as mediation unfolds as a real-time trajectory shaped by disputants' shifting emotions, intentions, and context. Existing testbeds rely on a few expert-authored domains, vary mainly strategic posture, and score every turn against every topic, introducing off-topic noise. We introduce <strong style="color:var(--navy)">SoCRATES</strong>, a benchmark for evaluating proactive LLM mediators in realistic, multi-domain testbeds. It constructs scenarios from real conflicts through an agentic pipeline across eight domains, probes five socio-cognitive adaptation axes (strategic posture, party composition, history length, emotional reactivity, and cultural identity), and scores each topic only on the turns that advance it via a topic-localized evaluator. The evaluator reaches 0.82 alignment with human experts, more than doubling a per-turn baseline. Benchmarking eight frontier LLMs, we find that even the strongest mediator closes only about a third of the unmediated consensus gap under diverse and realistic testbeds, with performance varying sharply by socio-cognitive axis, highlighting that progress lies in social adaptation to diverse conditions.
+            </p>
+        </section>
+
+        <!-- ===== Contributions ===== -->
+        <section id="contributions">
+            <div class="section-title">Key Contributions</div>
+            <div class="keybox narrow">
+                <ul>
+                    <li>A unified, automated framework integrating <strong>agentic scenario curation</strong>, <strong>socio-cognitive probing</strong>, and <strong>topic-localized evaluation</strong> in a single pipeline.</li>
+                    <li>A <strong>topic-localized evaluator</strong> that scores mediator trajectories on three real-time metrics, correlating with expert judgments at Pearson <em>r</em> = 0.82.</li>
                     <li>A comprehensive benchmark of <strong>eight proprietary and open-source LLM mediators</strong> across diverse conflict domains and socio-cognitive axes.</li>
-                    <li>We find that the strongest mediator closes only <strong>roughly a third</strong> of the unmediated consensus gap, and that gains vary sharply by socio-cognitive axis, with strong mediation adapting its intervention strategy to socio-cognitive demands.</li>
+                    <li>Evidence that the strongest mediator closes only <strong>roughly a third</strong> of the unmediated consensus gap, with gains varying sharply by socio-cognitive axis.</li>
                 </ul>
             </div>
-        </div>
+        </section>
 
-        <!-- Framework: three pillars -->
-        <div class="section-title">The SoCRATES Framework</div>
-        <div class="narrow" style="width: 60%; margin-bottom: 36px;">
-            <div class="pillar-grid">
+        <!-- ===== Method / Framework ===== -->
+        <section id="method">
+            <div class="section-title">The SoCRATES Framework</div>
+            <div class="pillar-grid narrow">
                 <div class="pillar">
-                    <span class="pnum" style="background:#C0504D;">1</span>
+                    <span class="pnum" style="background:var(--tim)">1</span>
                     <h3>Agentic Scenario Curation</h3>
-                    <p>A three-stage pipeline of LLM agents <em>searches</em> the web for real public disputes across eight conflict domains, <em>recasts</em> each case into a structured scenario, and <em>filters</em> via rejection sampling, retaining only hard scenarios that fail to resolve without a mediator.</p>
+                    <p>LLM agents <em>search</em> the web for real public disputes across eight domains, <em>recast</em> each into a structured scenario, and <em>filter</em> by rejection sampling &mdash; keeping only hard cases that fail to resolve without a mediator.</p>
                 </div>
                 <div class="pillar">
-                    <span class="pnum" style="background:#6BAE5A;">2</span>
+                    <span class="pnum" style="background:var(--eff)">2</span>
                     <h3>Socio-Cognitive Probing</h3>
-                    <p>Each scenario is perturbed independently along five axes &mdash; strategic posture, party composition, history length, emotional reactivity, and cultural identity &mdash; so any shift in mediator performance is attributable to a single axis, yielding per-axis diagnostics.</p>
+                    <p>Each scenario is perturbed independently along five axes &mdash; strategic posture, party composition, history length, emotional reactivity, and cultural identity &mdash; so any performance shift is attributable to a single axis.</p>
                 </div>
                 <div class="pillar">
-                    <span class="pnum" style="background:#4F81BD;">3</span>
+                    <span class="pnum" style="background:var(--cgn)">3</span>
                     <h3>Topic-Localized Evaluation</h3>
-                    <p>For each topic, the evaluator scores agreement only at the turns that actively move it and carries scores forward otherwise, supporting three metrics: consensus gain, intervention timeliness, and intervention effectiveness.</p>
+                    <p>For each topic, the evaluator scores agreement only at the turns that actively move it and carries scores forward otherwise, supporting three metrics: consensus gain, intervention timeliness, and effectiveness.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Evaluator validation -->
-        <div class="section-title">Evaluator Validation</div>
-        <div class="narrow" style="width: 52%; margin-bottom: 12px;">
-            <p style="text-align: left; color: #5b6572; font-size: 1.08rem; line-height: 1.6; margin: 0 0 16px 0;">
-                Two expert annotators rate 1,844 snippets from 144 mediator trajectories (inter-annotator agreement &alpha; = 0.86). The topic-localized evaluator aligns far better with experts than a per-turn baseline (<strong>ProMediate</strong>) or a <strong>Non-expert</strong> rater, at both the trajectory and outcome levels.
+        <!-- ===== Evaluator ===== -->
+        <section id="evaluator">
+            <div class="section-title">How the Topic-Localized Evaluator Works</div>
+            <p class="section-sub">A conversation interleaves many topics, and most turns are off-topic noise for any single one. Scoring every topic at every turn (as per-turn judges do) blurs the signal. Our evaluator localizes each topic to the turns that actually advance it.</p>
+
+            <div class="narrow">
+                <div class="mech-grid" style="margin-bottom: 22px;">
+                    <div class="mech-step">
+                        <div class="n">1</div>
+                        <div><h4>Localize relevant turns</h4><p>For each topic, the evaluator first selects only the turns where the parties actually negotiate that topic &mdash; e.g. the settlement topic is touched on turns 3, 7, 11, 14, 16, 18, 20, 23&ndash;27, 31, 35, 37, 39, ignoring the rest.</p></div>
+                    </div>
+                    <div class="mech-step">
+                        <div class="n">2</div>
+                        <div><h4>Score agreement, carry forward</h4><p>At each relevant turn it rates agreement on a 1&ndash;5 rubric; between relevant turns the last score is carried forward, yielding a clean per-topic consensus trajectory free of off-topic noise.</p></div>
+                    </div>
+                    <div class="mech-step">
+                        <div class="n">3</div>
+                        <div><h4>Derive three metrics</h4><p>From the trajectory: <strong style="color:var(--cgn)">consensus gain</strong> (overall closure of the agreement gap), <strong style="color:var(--tim)">intervention timeliness</strong> (when the mediator acts relative to escalation), and <strong style="color:var(--eff)">intervention effectiveness</strong> (how much each intervention shifts consensus).</p></div>
+                    </div>
+                </div>
+
+                <div class="viz-card">
+                    <h3>Topic-localized agreement trajectory</h3>
+                    <p>The settlement topic from the dispute above. Dots are <strong>scored relevant turns</strong>; the step line is the carried-forward agreement. The mediator's reframing (turn 13) precedes the climb from impasse to agreement.</p>
+                    <div class="viz-scroll"><svg id="traj-chart"></svg></div>
+                </div>
+
+                <p class="body-text" style="margin-top:18px;">
+                    Validated against two expert annotators on 1,844 snippets from 144 trajectories (inter-annotator agreement &alpha; = 0.86), the topic-localized evaluator aligns far better with experts than a per-turn baseline (<strong>ProMediate</strong>) or a <strong>Non-expert</strong> rater, at both the trajectory and outcome levels.
+                </p>
+                <table class="lb" style="max-width:560px; margin: 12px auto 0 auto;">
+                    <thead><tr><th style="text-align:left; padding-left:16px;">Evaluator</th><th>Trajectory (<em>r</em>)</th><th class="avg-head">Outcome (<em>r</em>)</th></tr></thead>
+                    <tbody>
+                        <tr><td>Non-expert</td><td>0.331</td><td class="avg">0.527</td></tr>
+                        <tr><td>ProMediate <span class="badge closed">per-turn</span></td><td>0.372</td><td class="avg">0.432</td></tr>
+                        <tr class="row-top"><td>SoCRATES <span class="badge ours">ours</span></td><td class="best">0.823</td><td class="avg best">0.801</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== Leaderboard ===== -->
+        <section id="leaderboard">
+            <div class="section-title">Leaderboard</div>
+            <p class="section-sub">Eight LLM mediators, each run on 600 scenario&ndash;condition pairs (4,800 runs total). We report <strong style="color:var(--tim)">Timeliness</strong>, <strong style="color:var(--eff)">Effectiveness</strong>, and <strong style="color:var(--cgn)">Consensus Gain</strong>. Click a header to sort.</p>
+
+            <div class="narrow" style="position:relative;">
+                <div style="font-weight:800; color:#1f2937; margin:0 0 10px 0;">Core Metrics</div>
+                <table id="core-lb" class="lb">
+                    <colgroup><col style="width:36%"><col><col><col></colgroup>
+                    <thead><tr>
+                        <th data-ci="0">Mediator</th><th data-ci="1">Timeliness</th><th data-ci="2">Effectiveness</th><th data-ci="3" class="avg-head">Consensus Gain</th>
+                    </tr></thead>
+                    <tbody>
+                        <tr class="row-top"><td>GPT-5.4-mini <span class="badge closed">Closed</span></td><td>79.9</td><td>24.6</td><td class="avg best">34.4</td></tr>
+                        <tr><td>Gemini-3.1-Flash-Lite <span class="badge closed">Closed</span></td><td>80.9</td><td>24.6</td><td class="avg">33.0</td></tr>
+                        <tr><td>DeepSeek-V3.2 <span class="badge open">Open</span></td><td>75.8</td><td>23.1</td><td class="avg">31.9</td></tr>
+                        <tr><td>Qwen3-235B <span class="badge open">Open</span></td><td>76.4</td><td>24.6</td><td class="avg">30.7</td></tr>
+                        <tr><td>Gemma-4-26B <span class="badge open">Open</span></td><td>79.0</td><td>18.1</td><td class="avg">21.0</td></tr>
+                        <tr><td>Nemotron-3-120B <span class="badge open">Open</span></td><td>72.0</td><td>19.2</td><td class="avg">20.4</td></tr>
+                        <tr><td>Solar-Pro-3 <span class="badge open">Open</span></td><td>84.6</td><td>16.7</td><td class="avg">19.9</td></tr>
+                        <tr><td>Qwen3-30B <span class="badge open">Open</span></td><td>84.6</td><td>19.7</td><td class="avg">15.7</td></tr>
+                        <tr class="row-avg"><td>All-mediator Average</td><td>79.2</td><td>21.3</td><td class="avg">25.9</td></tr>
+                    </tbody>
+                </table>
+
+                <div style="font-weight:800; color:#1f2937; margin:8px 0 10px 0;">Consensus Gain by Conflict Domain</div>
+                <table id="domain-lb" class="lb">
+                    <thead><tr>
+                        <th data-ci="0">Mediator</th><th data-ci="1">Trans.</th><th data-ci="2">Health</th><th data-ci="3">Env.</th><th data-ci="4">B2B</th><th data-ci="5">Policy</th><th data-ci="6">Intl.</th><th data-ci="7">Legal</th><th data-ci="8">Intra.</th><th data-ci="9" class="avg-head">Avg.</th>
+                    </tr></thead>
+                    <tbody>
+                        <tr class="row-top"><td>GPT-5.4-mini <span class="badge closed">Closed</span></td><td>55.6</td><td>23.6</td><td>35.0</td><td>32.0</td><td>28.2</td><td>30.3</td><td>41.2</td><td>29.5</td><td class="avg best">34.4</td></tr>
+                        <tr><td>Gemini-3.1-Flash-Lite <span class="badge closed">Closed</span></td><td>52.1</td><td>47.7</td><td>25.9</td><td>34.6</td><td>36.0</td><td>22.0</td><td>26.7</td><td>18.8</td><td class="avg">33.0</td></tr>
+                        <tr><td>DeepSeek-V3.2 <span class="badge open">Open</span></td><td>53.3</td><td>41.2</td><td>27.6</td><td>26.4</td><td>35.4</td><td>26.6</td><td>27.0</td><td>17.8</td><td class="avg">31.9</td></tr>
+                        <tr><td>Qwen3-235B <span class="badge open">Open</span></td><td>51.0</td><td>29.7</td><td>22.8</td><td>28.2</td><td>32.5</td><td>33.8</td><td>20.7</td><td>26.9</td><td class="avg">30.7</td></tr>
+                        <tr><td>Gemma-4-26B <span class="badge open">Open</span></td><td>42.9</td><td>22.9</td><td>24.6</td><td>15.8</td><td>7.1</td><td>15.9</td><td>24.4</td><td>14.6</td><td class="avg">21.0</td></tr>
+                        <tr><td>Nemotron-3-120B <span class="badge open">Open</span></td><td>41.9</td><td>41.1</td><td>16.7</td><td>14.5</td><td>15.8</td><td>17.7</td><td>7.0</td><td>8.3</td><td class="avg">20.4</td></tr>
+                        <tr><td>Solar-Pro-3 <span class="badge open">Open</span></td><td>41.8</td><td>30.1</td><td>24.3</td><td>28.3</td><td>6.6</td><td>13.4</td><td>6.0</td><td>8.7</td><td class="avg">19.9</td></tr>
+                        <tr><td>Qwen3-30B <span class="badge open">Open</span></td><td>-7.9</td><td>48.6</td><td>26.3</td><td>16.0</td><td>17.9</td><td>18.1</td><td>-1.2</td><td>8.2</td><td class="avg">15.7</td></tr>
+                        <tr class="row-avg"><td>All-mediator Average</td><td>41.3</td><td>35.6</td><td>25.4</td><td>24.5</td><td>22.4</td><td>22.2</td><td>19.0</td><td>16.6</td><td class="avg">25.9</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section-title" style="font-size:1.5rem; margin-top:30px;">Leaderboard Visualization</div>
+            <div class="narrow">
+                <div class="viz-card">
+                    <h3>Consensus Gain by Mediator</h3>
+                    <p>Average across the eight domains. Even the best mediator closes only about a third of the unmediated gap.</p>
+                    <div class="viz-scroll"><svg id="cg-bar"></svg></div>
+                </div>
+                <div class="viz-card">
+                    <h3>Consensus Gain Heatmap Across Domains</h3>
+                    <p>Gain swings from Transactional (easy) down to Intra-organizational (hard).</p>
+                    <div class="viz-scroll"><svg id="domain-heat"></svg></div>
+                    <div class="viz-legend"><span>Lower</span><span class="viz-grad"></span><span>Higher</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Findings ===== -->
+        <section id="findings">
+            <div class="section-title">Key Findings</div>
+            <div class="narrow">
+                <div class="finding">
+                    <div class="head"><span class="n">01</span><h3>Mediation is hard, and scale alone does not solve it</h3></div>
+                    <p>Average consensus gain caps at <strong>34.4</strong>; no mediator clears half the unmediated gap in any domain. <span class="tag">General capability does not directly translate to mediation.</span></p>
+                </div>
+                <hr class="dash">
+                <div class="finding">
+                    <div class="head"><span class="n">02</span><h3>Timeliness without effectiveness</h3></div>
+                    <p>The most frequent interveners (Solar-Pro-3, Qwen3-30B) rank lowest on consensus gain. <span class="tag">A good mediator acts at the right moment with the right content.</span></p>
+                </div>
+                <hr class="dash">
+                <div class="finding">
+                    <div class="head"><span class="n">03</span><h3>Domain coverage shapes the verdict</h3></div>
+                    <p>Gain swings from <strong>41.3</strong> (Transactional) to <strong>16.6</strong> (Intra-organizational). <span class="tag">A transactional-only benchmark overstates mediation ability.</span></p>
+                </div>
+                <hr class="dash">
+                <div class="finding">
+                    <div class="head"><span class="n">04</span><h3>Mediators have uneven socio-cognitive profiles</h3></div>
+                    <p>Every mediator contracts on at least one axis. Strategy is the sharpest stress test, reactivity degrades all mediators, and culture causes small but systematic declines as distance from U.S. norms grows. <span class="tag">Competence comprises distinct abilities acquired unevenly.</span></p>
+                </div>
+
+                <figure>
+                    <img src="static/img/radar.png" alt="Socio-cognitive radar">
+                    <figcaption><strong>Figure 2.</strong> Mediator adaptation across the general condition and five socio-cognitive axes, measured by consensus gain.</figcaption>
+                </figure>
+                <figure>
+                    <img src="static/img/shift.png" alt="Strategy, emotion, culture shifts">
+                    <figcaption><strong>Figure 3.</strong> Consensus gain shift from the general condition along (a) strategic posture, (b) emotional reactivity, and (c) cultural identity. Negative values indicate degradation.</figcaption>
+                </figure>
+                <figure>
+                    <img src="static/img/timing.png" alt="Intervention timing">
+                    <figcaption><strong>Figure 4.</strong> Intervention effectiveness over normalized conversation progress. The best intervention window moves with the condition; stronger mediators peak near each window.</figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <!-- ===== Conclusion ===== -->
+        <section id="conclusion">
+            <div class="section-title">Conclusion</div>
+            <p class="body-text narrow">
+                <strong style="color:var(--navy)">SoCRATES</strong> evaluates proactive LLM mediators in realistic, multi-domain testbeds. By grounding scenarios in real public disputes, probing five socio-cognitive axes independently, and scoring each topic only on the turns that advance it, it reveals that even the strongest mediator closes only about a third of the unmediated consensus gap, with performance varying sharply by conflict domain and socio-cognitive axis. Progress in LLM mediation lies not in raw capability but in social adaptation to diverse conditions.
             </p>
-            <table class="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th style="text-align:left; padding-left:18px;">Evaluator</th>
-                        <th>Trajectory level (<em>r</em>)</th>
-                        <th class="avg-head">Outcome level (<em>r</em>)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Non-expert</td><td>0.331</td><td class="avg-cell">0.527</td></tr>
-                    <tr><td>ProMediate <span class="model-badge proprietary-badge">per-turn</span></td><td>0.372</td><td class="avg-cell">0.432</td></tr>
-                    <tr class="top-performer"><td>SoCRATES <span class="model-badge open-badge">ours</span></td><td class="best-score">0.823</td><td class="avg-cell best-score">0.801</td></tr>
-                </tbody>
-            </table>
-        </div>
+        </section>
 
-        <!-- Leaderboard -->
-        <div id="leaderboard" class="section-title">Leaderboard</div>
-        <div class="leaderboard-container narrow" style="width: 60%; margin-bottom: 8px;">
-            <p style="text-align: left; color: #5b6572; font-size: 1.08rem; line-height: 1.6; margin: 0 0 18px 0;">
-                Eight LLM mediators benchmarked on SoCRATES, each run on 600 scenario&ndash;condition pairs (4,800 runs in total). We report three metrics: <strong style="color:#C0504D;">Intervention Timeliness</strong> (when the mediator acts relative to escalation), <strong style="color:#6BAE5A;">Intervention Effectiveness</strong> (how much each intervention shifts consensus), and <strong style="color:#4F81BD;">Consensus Gain</strong> (overall contribution to closing the unmediated agreement gap). Click a column header to sort.
-            </p>
-
-            <div style="font-size: 1.12rem; font-weight: 800; color: #1f2937; margin: 0 0 10px 0; text-align: left;">Core Metrics</div>
-            <table id="core-leaderboard" class="leaderboard-table">
-                <colgroup><col style="width:34%"><col><col><col></colgroup>
-                <thead>
-                    <tr>
-                        <th data-column-index="0">Mediator</th>
-                        <th data-column-index="1">Timeliness</th>
-                        <th data-column-index="2">Effectiveness</th>
-                        <th data-column-index="3" class="avg-head">Consensus Gain</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="top-performer"><td>GPT-5.4-mini <span class="model-badge proprietary-badge">Closed</span></td><td>79.9</td><td>24.6</td><td class="avg-cell best-score">34.4</td></tr>
-                    <tr><td>Gemini-3.1-Flash-Lite <span class="model-badge proprietary-badge">Closed</span></td><td>80.9</td><td>24.6</td><td class="avg-cell">33.0</td></tr>
-                    <tr><td>DeepSeek-V3.2 <span class="model-badge open-badge">Open</span></td><td>75.8</td><td>23.1</td><td class="avg-cell">31.9</td></tr>
-                    <tr><td>Qwen3-235B <span class="model-badge open-badge">Open</span></td><td>76.4</td><td>24.6</td><td class="avg-cell">30.7</td></tr>
-                    <tr><td>Gemma-4-26B <span class="model-badge open-badge">Open</span></td><td>79.0</td><td>18.1</td><td class="avg-cell">21.0</td></tr>
-                    <tr><td>Nemotron-3-120B <span class="model-badge open-badge">Open</span></td><td>72.0</td><td>19.2</td><td class="avg-cell">20.4</td></tr>
-                    <tr><td>Solar-Pro-3 <span class="model-badge open-badge">Open</span></td><td>84.6</td><td>16.7</td><td class="avg-cell">19.9</td></tr>
-                    <tr><td>Qwen3-30B <span class="model-badge open-badge">Open</span></td><td>84.6</td><td>19.7</td><td class="avg-cell">15.7</td></tr>
-                    <tr class="human-level-row"><td>All-mediator Average</td><td>79.2</td><td>21.3</td><td class="avg-cell">25.9</td></tr>
-                </tbody>
-            </table>
-
-            <div style="font-size: 1.12rem; font-weight: 800; color: #1f2937; margin: 12px 0 10px 0; text-align: left;">Consensus Gain by Conflict Domain</div>
-            <table id="domain-leaderboard" class="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th data-column-index="0">Mediator</th>
-                        <th data-column-index="1">Trans.</th>
-                        <th data-column-index="2">Health</th>
-                        <th data-column-index="3">Env.</th>
-                        <th data-column-index="4">B2B</th>
-                        <th data-column-index="5">Policy</th>
-                        <th data-column-index="6">Intl.</th>
-                        <th data-column-index="7">Legal</th>
-                        <th data-column-index="8">Intra.</th>
-                        <th data-column-index="9" class="avg-head">Avg.</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="top-performer"><td>GPT-5.4-mini <span class="model-badge proprietary-badge">Closed</span></td><td>55.6</td><td>23.6</td><td>35.0</td><td>32.0</td><td>28.2</td><td>30.3</td><td>41.2</td><td>29.5</td><td class="avg-cell best-score">34.4</td></tr>
-                    <tr><td>Gemini-3.1-Flash-Lite <span class="model-badge proprietary-badge">Closed</span></td><td>52.1</td><td>47.7</td><td>25.9</td><td>34.6</td><td>36.0</td><td>22.0</td><td>26.7</td><td>18.8</td><td class="avg-cell">33.0</td></tr>
-                    <tr><td>DeepSeek-V3.2 <span class="model-badge open-badge">Open</span></td><td>53.3</td><td>41.2</td><td>27.6</td><td>26.4</td><td>35.4</td><td>26.6</td><td>27.0</td><td>17.8</td><td class="avg-cell">31.9</td></tr>
-                    <tr><td>Qwen3-235B <span class="model-badge open-badge">Open</span></td><td>51.0</td><td>29.7</td><td>22.8</td><td>28.2</td><td>32.5</td><td>33.8</td><td>20.7</td><td>26.9</td><td class="avg-cell">30.7</td></tr>
-                    <tr><td>Gemma-4-26B <span class="model-badge open-badge">Open</span></td><td>42.9</td><td>22.9</td><td>24.6</td><td>15.8</td><td>7.1</td><td>15.9</td><td>24.4</td><td>14.6</td><td class="avg-cell">21.0</td></tr>
-                    <tr><td>Nemotron-3-120B <span class="model-badge open-badge">Open</span></td><td>41.9</td><td>41.1</td><td>16.7</td><td>14.5</td><td>15.8</td><td>17.7</td><td>7.0</td><td>8.3</td><td class="avg-cell">20.4</td></tr>
-                    <tr><td>Solar-Pro-3 <span class="model-badge open-badge">Open</span></td><td>41.8</td><td>30.1</td><td>24.3</td><td>28.3</td><td>6.6</td><td>13.4</td><td>6.0</td><td>8.7</td><td class="avg-cell">19.9</td></tr>
-                    <tr><td>Qwen3-30B <span class="model-badge open-badge">Open</span></td><td>-7.9</td><td>48.6</td><td>26.3</td><td>16.0</td><td>17.9</td><td>18.1</td><td>-1.2</td><td>8.2</td><td class="avg-cell">15.7</td></tr>
-                    <tr class="human-level-row"><td>All-mediator Average</td><td>41.3</td><td>35.6</td><td>25.4</td><td>24.5</td><td>22.4</td><td>22.2</td><td>19.0</td><td>16.6</td><td class="avg-cell">25.9</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Visualizations -->
-        <div class="section-title">Leaderboard Visualization</div>
-        <div class="narrow" style="width: 56%;">
-            <div class="viz-card">
-                <h3>Consensus Gain by Mediator</h3>
-                <p>Average consensus gain across the eight conflict domains. Even the strongest mediator closes only about a third of the unmediated agreement gap.</p>
-                <div class="viz-scroll"><svg id="cg-bar-chart"></svg></div>
-            </div>
-            <div class="viz-card">
-                <h3>Consensus Gain Heatmap Across Domains</h3>
-                <p>Rows are mediators, columns are the eight conflict domains. Consensus gain swings from Transactional (easy) down to Intra-organizational (hard).</p>
-                <div class="viz-scroll"><svg id="domain-heatmap-chart"></svg></div>
-                <div class="viz-legend"><span>Lower</span><span class="viz-gradient"></span><span>Higher</span></div>
-            </div>
-        </div>
-
-        <!-- Key findings -->
-        <div class="section-title">Key Findings</div>
-        <div class="narrow" style="width: 60%; font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6;">
-
-            <div style="margin-bottom: 44px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span style="background: #2f4a63; color: #fff; padding: 2px 8px; font-size: 0.8em; font-weight: 900; border-radius: 3px;">01</span>
-                    <h3 style="margin: 0; font-size: 1.32em; color: #1a2f45;">Mediation is hard, and scale alone does not solve it</h3>
+        <!-- ===== BibTeX ===== -->
+        <section id="bibtex">
+            <div class="narrow" style="margin: 48px auto 0 auto;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px;">
+                    <div style="font-size:1.2rem; font-weight:800; color:#1f2937;">BibTeX</div>
+                    <button id="copy-bib" class="copy-btn">Copy</button>
                 </div>
-                <p style="color: #444; font-size: 1.12rem; margin-bottom: 8px;">
-                    Average consensus gain caps at <strong>34.4</strong>, and no mediator clears half the unmediated gap in any domain. The two proprietary models lead, but within a family scale helps (Qwen3-235B nearly doubles Qwen3-30B) while across families it does not order the field. <span class="finding-tag">General capability does not directly translate to mediation.</span>
-                </p>
-            </div>
-
-            <hr style="border: 0; border-top: 1px dashed #ddd; margin-bottom: 44px;">
-
-            <div style="margin-bottom: 44px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span style="background: #2f4a63; color: #fff; padding: 2px 8px; font-size: 0.8em; font-weight: 900; border-radius: 3px;">02</span>
-                    <h3 style="margin: 0; font-size: 1.32em; color: #1a2f45;">Timeliness without effectiveness</h3>
-                </div>
-                <p style="color: #444; font-size: 1.12rem; margin-bottom: 8px;">
-                    Solar-Pro-3 and Qwen3-30B post the highest intervention timeliness yet rank lowest on consensus gain, intervening too often without affecting the outcome. Effectiveness, in contrast, aligns with consensus gain. <span class="finding-tag">A good mediator must intervene at the right moments and with the right content.</span>
-                </p>
-            </div>
-
-            <hr style="border: 0; border-top: 1px dashed #ddd; margin-bottom: 44px;">
-
-            <div style="margin-bottom: 44px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span style="background: #2f4a63; color: #fff; padding: 2px 8px; font-size: 0.8em; font-weight: 900; border-radius: 3px;">03</span>
-                    <h3 style="margin: 0; font-size: 1.32em; color: #1a2f45;">Domain coverage shapes the verdict</h3>
-                </div>
-                <p style="color: #444; font-size: 1.12rem; margin-bottom: 8px;">
-                    Consensus gain swings from <strong>41.3</strong> on Transactional conflict down to <strong>16.6</strong> on Intra-organizational disputes. The easy end coincides with where prior datasets concentrate. <span class="finding-tag">A benchmark restricted to transactional conflict overstates mediation ability.</span>
-                </p>
-            </div>
-
-            <hr style="border: 0; border-top: 1px dashed #ddd; margin-bottom: 44px;">
-
-            <div style="margin-bottom: 24px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <span style="background: #2f4a63; color: #fff; padding: 2px 8px; font-size: 0.8em; font-weight: 900; border-radius: 3px;">04</span>
-                    <h3 style="margin: 0; font-size: 1.32em; color: #1a2f45;">Mediators have uneven socio-cognitive profiles</h3>
-                </div>
-                <p style="color: #444; font-size: 1.12rem; margin-bottom: 16px;">
-                    Across the five socio-cognitive axes, every mediator contracts on at least one, and strong mediators differ in <em>where</em> they fail. <strong>Strategy</strong> is the sharpest stress test (Competing and Accommodating postures cause the largest drops); <strong>emotional reactivity</strong> degrades every mediator when both parties are reactive; and <strong>cultural identity</strong> produces small but systematic declines as cultural distance from U.S. norms grows. <span class="finding-tag">Mediation competence comprises distinct abilities that current LLMs acquire unevenly.</span>
-                </p>
-                <figure style="width: 96%; margin: 18px auto; background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
-                    <img data-zoomable="" src="static/img/radar.png" alt="Socio-cognitive radar" style="width: 100%; display: block;">
-                    <figcaption style="padding: 13px; text-align: center; font-size: 15px; color: #666; border-top: 1px solid #eee;">
-                        <strong style="color:#333;">Figure 2.</strong> Mediator adaptation across the general condition and five socio-cognitive axes, measured by consensus gain.
-                    </figcaption>
-                </figure>
-                <figure style="width: 96%; margin: 18px auto; background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
-                    <img data-zoomable="" src="static/img/shift.png" alt="Strategy, emotion, culture shifts" style="width: 100%; display: block;">
-                    <figcaption style="padding: 13px; text-align: center; font-size: 15px; color: #666; border-top: 1px solid #eee;">
-                        <strong style="color:#333;">Figure 3.</strong> Consensus gain shift from the general condition along three axes: (a) strategic posture, (b) emotional reactivity, and (c) cultural identity. Negative values indicate degradation.
-                    </figcaption>
-                </figure>
-                <figure style="width: 96%; margin: 18px auto; background: #fff; border: 1px solid #eee; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.04);">
-                    <img data-zoomable="" src="static/img/timing.png" alt="Intervention timing adaptation" style="width: 100%; display: block;">
-                    <figcaption style="padding: 13px; text-align: center; font-size: 15px; color: #666; border-top: 1px solid #eee;">
-                        <strong style="color:#333;">Figure 4.</strong> Intervention effectiveness over normalized conversation progress. The best intervention window moves with the condition, and stronger mediators peak near each condition's window.
-                    </figcaption>
-                </figure>
-            </div>
-        </div>
-
-        <!-- Conclusion -->
-        <div class="section-title">Conclusion</div>
-        <p class="text conclusion">
-            We present <strong style="color:#2f4a63;">SoCRATES</strong>, a benchmark for evaluating proactive LLM mediators in realistic, multi-domain testbeds. By grounding scenarios in real public disputes, probing five socio-cognitive axes independently, and scoring each topic only on the turns that advance it, SoCRATES reveals that even the strongest mediator closes only about a third of the unmediated consensus gap, with performance varying sharply by conflict domain and socio-cognitive axis. These results show that progress in LLM mediation lies not in raw capability but in social adaptation to diverse conditions.
-            <br>
-        </p>
-
-        <!-- BibTeX -->
-        <div class="narrow" style="width: 60%; margin: 56px auto 72px auto; text-align: left; font-family: 'Segoe UI', Arial, sans-serif;">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px;">
-                <div style="font-size: 1.2rem; font-weight: 800; color: #1f2937;">BibTeX</div>
-                <button id="copy-bibtex-button" type="button" style="border: 1px solid #cbd5e1; background: #ffffff; color: #334155; border-radius: 999px; padding: 7px 14px; font-size: 0.9rem; font-weight: 700; cursor: pointer;">Copy</button>
-            </div>
-            <pre id="bibtex-block" style="margin: 0; padding: 18px 20px; border-radius: 14px; background: #f8fafc; border: 1px solid #dbe7f0; color: #1f2937; font-size: 0.96rem; line-height: 1.65; text-align: left; white-space: pre-wrap;">@article{yun2026socrates,
-  title={SoCRATES: Towards Reliable Automated Evaluation of Proactive LLM Mediation across Domains and Socio-cognitive Variations},
-  author={Yun, Taewon and Park, Hyeonseong and Choi, Jeonghwan and Park, Hayoon and Choi, Yeeun and Song, Hwanjun},
+                <pre class="bib" id="bib-block">@article{yun2026socrates,
+  title={SoCRATES: Towards Reliable Automated Evaluation of Proactive LLM
+         Mediation across Domains and Socio-cognitive Variations},
+  author={Yun, Taewon and Park, Hyeonseong and Choi, Jeonghwan and
+          Park, Hayoon and Choi, Yeeun and Song, Hwanjun},
   journal={arXiv preprint},
   year={2026}
 }</pre>
-        </div>
-    </d-article>
+            </div>
+        </section>
+    </main>
 
-<!-- Leaderboard sorting -->
+    <footer>Data Intelligence System Lab &nbsp;·&nbsp; KAIST</footer>
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const tables = document.querySelectorAll('.leaderboard-table');
-
-    function getModelName(cell) {
-        const c = cell.cloneNode(true);
-        c.querySelectorAll('.model-badge').forEach(b => b.remove());
-        return c.textContent.trim();
-    }
-    function getGroup(row) {
-        const cell = row.children[0];
-        const name = getModelName(cell);
-        if (name.indexOf('Average') !== -1) return 3;
-        if (cell.querySelector('.proprietary-badge')) return 1;
-        if (cell.querySelector('.open-badge')) return 2;
-        return 0;
-    }
-
-    tables.forEach(table => {
-        const thead = table.querySelector('thead');
+    // ===== Sortable tables =====
+    function modelName(cell){ const c=cell.cloneNode(true); c.querySelectorAll('.badge').forEach(b=>b.remove()); return c.textContent.trim(); }
+    function group(row){ const c=row.children[0]; if(modelName(c).indexOf('Average')!==-1) return 3; if(c.querySelector('.badge.closed')) return 1; if(c.querySelector('.badge.open')) return 2; return 0; }
+    document.querySelectorAll('.lb').forEach(table => {
+        const heads = table.querySelectorAll('th[data-ci]'); if(!heads.length) return;
         const tbody = table.querySelector('tbody');
-        const headers = thead ? thead.querySelectorAll('th[data-column-index]') : [];
-        if (!headers.length) return;
-
-        let sortConfig = { columnIndex: null, direction: 'desc' };
-
-        function updateIndicators() {
-            headers.forEach(h => {
-                const ind = h.querySelector('.sort-indicator');
-                if (!ind) return;
-                const hi = parseInt(h.dataset.columnIndex, 10);
-                if (hi === sortConfig.columnIndex) {
-                    ind.textContent = sortConfig.direction === 'asc' ? '▲' : '▼';
-                    h.classList.add('active');
-                } else { ind.textContent = ''; h.classList.remove('active'); }
-            });
+        let cfg = { ci: null, dir: 'desc' };
+        function indicators(){ heads.forEach(h=>{ let i=h.querySelector('.ind'); if(!i){i=document.createElement('span');i.className='ind';h.appendChild(i);} const hi=+h.dataset.ci; if(hi===cfg.ci){i.textContent=cfg.dir==='asc'?'▲':'▼';h.classList.add('active');}else{i.textContent='';h.classList.remove('active');} }); }
+        function sort(){
+            const rows=Array.from(tbody.querySelectorAll('tr'));
+            const body=rows.filter(r=>!r.classList.contains('row-avg'));
+            const foot=rows.filter(r=>r.classList.contains('row-avg'));
+            const d=cfg.dir==='asc'?1:-1;
+            if(cfg.ci===null) body.sort((a,b)=>group(a)-group(b));
+            else if(cfg.ci===0) body.sort((a,b)=>(group(a)-group(b))||modelName(a.children[0]).localeCompare(modelName(b.children[0]))*d);
+            else body.sort((a,b)=>(parseFloat(a.children[cfg.ci].textContent)-parseFloat(b.children[cfg.ci].textContent))*d);
+            body.concat(foot).forEach(r=>tbody.appendChild(r)); indicators();
         }
-
-        function sortTable() {
-            const rows = Array.from(tbody.querySelectorAll('tr'));
-            const body = rows.filter(r => !r.classList.contains('human-level-row'));
-            const footer = rows.filter(r => r.classList.contains('human-level-row'));
-            const dir = sortConfig.direction === 'asc' ? 1 : -1;
-            if (sortConfig.columnIndex === null) {
-                body.sort((a, b) => getGroup(a) - getGroup(b));
-            } else if (sortConfig.columnIndex === 0) {
-                body.sort((a, b) => (getGroup(a) - getGroup(b)) || getModelName(a.children[0]).localeCompare(getModelName(b.children[0])) * dir);
-            } else {
-                body.sort((a, b) => {
-                    const va = parseFloat(a.children[sortConfig.columnIndex].textContent);
-                    const vb = parseFloat(b.children[sortConfig.columnIndex].textContent);
-                    return (va - vb) * dir;
-                });
-            }
-            body.concat(footer).forEach(r => tbody.appendChild(r));
-            updateIndicators();
-        }
-
-        headers.forEach(header => {
-            header.classList.add('sortable-header');
-            let ind = header.querySelector('.sort-indicator');
-            if (!ind) { ind = document.createElement('span'); ind.className = 'sort-indicator'; header.appendChild(ind); }
-            header.addEventListener('click', () => {
-                const ci = parseInt(header.dataset.columnIndex, 10);
-                if (sortConfig.columnIndex === ci) {
-                    sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
-                } else { sortConfig.columnIndex = ci; sortConfig.direction = 'desc'; }
-                sortTable();
-            });
-        });
+        heads.forEach(h=>{ h.classList.add('sortable'); let i=document.createElement('span'); i.className='ind'; h.appendChild(i);
+            h.addEventListener('click',()=>{ const ci=+h.dataset.ci; if(cfg.ci===ci) cfg.dir=cfg.dir==='asc'?'desc':'asc'; else {cfg.ci=ci;cfg.dir='desc';} sort(); }); });
     });
+    document.querySelectorAll('#domain-lb td').forEach(td=>{ if(parseFloat(td.textContent)<0) td.classList.add('neg'); });
 
-    // Mark negative cells
-    document.querySelectorAll('#domain-leaderboard td').forEach(td => {
-        if (parseFloat(td.textContent) < 0) td.classList.add('neg-cell');
-    });
+    const tooltip = d3.select('body').selectAll('.viz-tooltip').data([null]).join('div').attr('class','viz-tooltip');
 
-    // ===== Visualizations =====
-    function parseTable(id) {
-        const table = document.getElementById(id);
-        const rows = Array.from(table.querySelectorAll('tbody tr'));
-        return rows.filter(r => !r.classList.contains('human-level-row')).map(row => {
-            const cell = row.children[0];
-            const c = cell.cloneNode(true); c.querySelectorAll('.model-badge').forEach(b => b.remove());
-            const cells = Array.from(row.querySelectorAll('td'));
-            return {
-                name: c.textContent.trim(),
-                type: cell.querySelector('.proprietary-badge') ? 'closed' : 'open',
-                values: cells.slice(1).map(td => parseFloat(td.textContent))
-            };
-        });
-    }
-
-    const tooltip = d3.select('body').selectAll('.viz-tooltip').data([null]).join('div').attr('class', 'viz-tooltip');
-
-    // Bar: avg consensus gain
-    (function renderBar() {
-        const data = parseTable('core-leaderboard').map(d => ({ name: d.name, type: d.type, val: d.values[2] }))
-            .sort((a, b) => b.val - a.val);
-        const svg = d3.select('#cg-bar-chart');
-        const cw = svg.node().parentNode.getBoundingClientRect().width || 620;
-        const margin = { top: 16, right: 40, bottom: 34, left: 158 };
-        const rowBand = 34;
-        const width = Math.max(520, Math.floor(cw));
-        const height = margin.top + margin.bottom + data.length * rowBand;
-        const iw = width - margin.left - margin.right, ih = height - margin.top - margin.bottom;
-        svg.attr('viewBox', '0 0 ' + width + ' ' + height).attr('width', '100%').attr('height', height);
-        svg.selectAll('*').remove();
-        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-        const x = d3.scaleLinear().domain([0, 40]).range([0, iw]);
-        const y = d3.scaleBand().domain(data.map(d => d.name)).range([0, ih]).padding(0.22);
-        g.append('g').call(d3.axisLeft(y).tickSize(0)).call(a => a.select('.domain').remove())
-            .call(a => a.selectAll('text').style('font-size', '11.5px').style('fill', '#334155'));
-        g.append('g').selectAll('line').data(x.ticks(5)).enter().append('line')
-            .attr('x1', d => x(d)).attr('x2', d => x(d)).attr('y1', 0).attr('y2', ih)
-            .attr('stroke', '#eef2f7');
-        g.append('g').attr('transform', `translate(0,${ih})`).call(d3.axisBottom(x).ticks(5))
-            .call(a => a.select('.domain').attr('stroke', '#cbd5e1'))
-            .call(a => a.selectAll('text').style('font-size', '11px').style('fill', '#475569'));
-        g.selectAll('.bar').data(data).enter().append('rect')
-            .attr('x', 0).attr('y', d => y(d.name)).attr('height', y.bandwidth()).attr('rx', 5)
-            .attr('width', d => x(d.val)).attr('fill', d => d.type === 'closed' ? '#2f4a63' : '#4F81BD')
-            .attr('opacity', 0.92)
-            .on('mousemove', function (d) {
-                const e = d3.event;
-                tooltip.style('opacity', 1).style('transform', 'translateY(0)')
-                    .style('left', (e.pageX + 14) + 'px').style('top', (e.pageY - 20) + 'px')
-                    .html('<strong>' + d.name + '</strong><br>Consensus Gain: ' + d.val.toFixed(1));
-            }).on('mouseleave', () => tooltip.style('opacity', 0).style('transform', 'translateY(6px)'));
-        g.selectAll('.lab').data(data).enter().append('text')
-            .attr('x', d => x(d.val) + 6).attr('y', d => y(d.name) + y.bandwidth() / 2 + 4)
-            .style('font-size', '11px').style('font-weight', '700').style('fill', '#1f2937')
-            .text(d => d.val.toFixed(1));
+    // ===== Evaluator trajectory =====
+    (function(){
+        const pts=[[3,1],[7,1],[11,1],[14,1],[16,1],[18,2],[20,3],[23,4],[24,4],[25,5],[26,4],[27,4],[31,4],[35,4],[37,4],[39,4]];
+        const maxT=39, mediator=[13,15];
+        const svg=d3.select('#traj-chart'); const cw=svg.node().parentNode.getBoundingClientRect().width||760;
+        const m={top:18,right:18,bottom:38,left:42}, width=Math.max(560,Math.floor(cw)), height=240;
+        const iw=width-m.left-m.right, ih=height-m.top-m.bottom;
+        svg.attr('viewBox','0 0 '+width+' '+height).attr('width','100%').attr('height',height); svg.selectAll('*').remove();
+        const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+        const x=d3.scaleLinear().domain([1,maxT]).range([0,iw]);
+        const y=d3.scaleLinear().domain([0,5]).range([ih,0]);
+        // grid
+        g.append('g').selectAll('line').data([1,2,3,4,5]).enter().append('line')
+            .attr('x1',0).attr('x2',iw).attr('y1',d=>y(d)).attr('y2',d=>y(d)).attr('stroke','#eef2f7');
+        g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')))
+            .call(a=>a.selectAll('text').style('font-size','11px').style('fill','#475569'));
+        g.append('g').call(d3.axisLeft(y).ticks(5)).call(a=>a.select('.domain').remove())
+            .call(a=>a.selectAll('text').style('font-size','11px').style('fill','#475569'));
+        g.append('text').attr('x',-ih/2).attr('y',-30).attr('transform','rotate(-90)').attr('text-anchor','middle').style('font-size','11px').style('fill','#64748b').text('Agreement (1–5)');
+        g.append('text').attr('x',iw/2).attr('y',ih+32).attr('text-anchor','middle').style('font-size','11px').style('fill','#64748b').text('Conversation turn');
+        // mediator markers
+        mediator.forEach(t=>{ g.append('line').attr('x1',x(t)).attr('x2',x(t)).attr('y1',0).attr('y2',ih).attr('stroke','#6BAE5A').attr('stroke-dasharray','4 3').attr('stroke-width',1.4).attr('opacity',0.8);
+            g.append('text').attr('x',x(t)).attr('y',-4).attr('text-anchor','middle').style('font-size','9.5px').style('font-weight','700').style('fill','#4f8a3c').text('⚖'); });
+        // step line (carry forward)
+        const line=d3.line().x(d=>x(d[0])).y(d=>y(d[1])).curve(d3.curveStepAfter);
+        g.append('path').datum(pts).attr('fill','none').attr('stroke','#4F81BD').attr('stroke-width',2.4).attr('d',line);
+        const color=d3.scaleLinear().domain([1,3,5]).range(['#C0504D','#E0A33E','#6BAE5A']);
+        g.selectAll('.dot').data(pts).enter().append('circle').attr('cx',d=>x(d[0])).attr('cy',d=>y(d[1])).attr('r',4.5)
+            .attr('fill',d=>color(d[1])).attr('stroke','#fff').attr('stroke-width',1.3)
+            .on('mousemove',function(d){const e=d3.event;tooltip.style('opacity',1).style('transform','translateY(0)').style('left',(e.pageX+14)+'px').style('top',(e.pageY-20)+'px').html('<strong>Turn '+d[0]+'</strong><br>Agreement: '+d[1]+'/5');})
+            .on('mouseleave',()=>tooltip.style('opacity',0).style('transform','translateY(6px)'));
     })();
 
-    // Heatmap: consensus gain by domain
-    (function renderHeatmap() {
-        const domains = ['Trans.', 'Health', 'Env.', 'B2B', 'Policy', 'Intl.', 'Legal', 'Intra.'];
-        const data = parseTable('domain-leaderboard');
-        const svg = d3.select('#domain-heatmap-chart');
-        const cellW = 52, cellH = 34;
-        const margin = { top: 40, right: 16, bottom: 14, left: 158 };
-        const width = margin.left + margin.right + domains.length * cellW;
-        const height = margin.top + margin.bottom + data.length * cellH;
-        svg.attr('viewBox', '0 0 ' + width + ' ' + height).attr('width', '100%').attr('height', height);
-        svg.selectAll('*').remove();
-        const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-        const x = d3.scaleBand().domain(domains).range([0, domains.length * cellW]).paddingInner(0.07);
-        const y = d3.scaleBand().domain(data.map(d => d.name)).range([0, data.length * cellH]).paddingInner(0.1);
-        const color = d3.scaleLinear().domain([-10, 25, 56]).range(['#f5e9e8', '#cfe0ef', '#2f4a63']);
-        g.selectAll('.col').data(domains).enter().append('text')
-            .attr('x', d => x(d) + x.bandwidth() / 2).attr('y', -12).attr('text-anchor', 'middle')
-            .style('font-size', '11px').style('font-weight', '700').style('fill', '#334155').text(d => d);
-        g.selectAll('.row').data(data).enter().append('text')
-            .attr('x', -12).attr('y', d => y(d.name) + y.bandwidth() / 2 + 4).attr('text-anchor', 'end')
-            .style('font-size', '11px').style('fill', '#334155').text(d => d.name);
-        const cells = [];
-        data.forEach(d => d.values.slice(0, 8).forEach((v, i) => cells.push({ model: d.name, domain: domains[i], value: v })));
-        g.selectAll('.cell').data(cells).enter().append('rect')
-            .attr('x', d => x(d.domain)).attr('y', d => y(d.model)).attr('width', x.bandwidth()).attr('height', y.bandwidth())
-            .attr('rx', 5).attr('fill', d => color(d.value)).attr('stroke', 'rgba(255,255,255,0.6)')
-            .on('mousemove', function (d) {
-                const e = d3.event;
-                tooltip.style('opacity', 1).style('transform', 'translateY(0)')
-                    .style('left', (e.pageX + 14) + 'px').style('top', (e.pageY - 20) + 'px')
-                    .html('<strong>' + d.model + '</strong><br>' + d.domain + ': ' + d.value.toFixed(1));
-            }).on('mouseleave', () => tooltip.style('opacity', 0).style('transform', 'translateY(6px)'));
-        g.selectAll('.val').data(cells).enter().append('text')
-            .attr('x', d => x(d.domain) + x.bandwidth() / 2).attr('y', d => y(d.model) + y.bandwidth() / 2 + 4)
-            .attr('text-anchor', 'middle').style('font-size', '10px').style('font-weight', '700')
-            .style('fill', d => d.value >= 38 ? '#fff' : '#1f2937').text(d => d.value.toFixed(1));
+    // ===== Bar: consensus gain =====
+    (function(){
+        const data=[];
+        document.querySelectorAll('#core-lb tbody tr').forEach(r=>{ if(r.classList.contains('row-avg'))return; const c=r.children[0]; const cl=c.cloneNode(true); cl.querySelectorAll('.badge').forEach(b=>b.remove());
+            data.push({name:cl.textContent.trim(), type:c.querySelector('.badge.closed')?'closed':'open', val:parseFloat(r.children[3].textContent)}); });
+        data.sort((a,b)=>b.val-a.val);
+        const svg=d3.select('#cg-bar'); const cw=svg.node().parentNode.getBoundingClientRect().width||620;
+        const m={top:14,right:40,bottom:32,left:168}, rb=34, width=Math.max(520,Math.floor(cw)), height=m.top+m.bottom+data.length*rb;
+        const iw=width-m.left-m.right, ih=height-m.top-m.bottom;
+        svg.attr('viewBox','0 0 '+width+' '+height).attr('width','100%').attr('height',height); svg.selectAll('*').remove();
+        const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+        const x=d3.scaleLinear().domain([0,40]).range([0,iw]);
+        const y=d3.scaleBand().domain(data.map(d=>d.name)).range([0,ih]).padding(0.22);
+        g.append('g').call(d3.axisLeft(y).tickSize(0)).call(a=>a.select('.domain').remove()).call(a=>a.selectAll('text').style('font-size','11.5px').style('fill','#334155'));
+        g.append('g').selectAll('line').data(x.ticks(5)).enter().append('line').attr('x1',d=>x(d)).attr('x2',d=>x(d)).attr('y1',0).attr('y2',ih).attr('stroke','#eef2f7');
+        g.append('g').attr('transform',`translate(0,${ih})`).call(d3.axisBottom(x).ticks(5)).call(a=>a.selectAll('text').style('font-size','11px').style('fill','#475569'));
+        g.selectAll('.bar').data(data).enter().append('rect').attr('x',0).attr('y',d=>y(d.name)).attr('height',y.bandwidth()).attr('rx',5)
+            .attr('width',d=>x(d.val)).attr('fill',d=>d.type==='closed'?'#2f4a63':'#4F81BD').attr('opacity',0.92)
+            .on('mousemove',function(d){const e=d3.event;tooltip.style('opacity',1).style('transform','translateY(0)').style('left',(e.pageX+14)+'px').style('top',(e.pageY-20)+'px').html('<strong>'+d.name+'</strong><br>Consensus Gain: '+d.val.toFixed(1));})
+            .on('mouseleave',()=>tooltip.style('opacity',0).style('transform','translateY(6px)'));
+        g.selectAll('.lab').data(data).enter().append('text').attr('x',d=>x(d.val)+6).attr('y',d=>y(d.name)+y.bandwidth()/2+4).style('font-size','11px').style('font-weight','700').style('fill','#1f2937').text(d=>d.val.toFixed(1));
     })();
 
-    // BibTeX copy
-    const btn = document.getElementById('copy-bibtex-button');
-    const block = document.getElementById('bibtex-block');
-    if (btn && block && navigator.clipboard) {
-        btn.addEventListener('click', async function () {
-            try {
-                await navigator.clipboard.writeText(block.textContent);
-                btn.textContent = 'Copied!';
-                setTimeout(() => btn.textContent = 'Copy', 1400);
-            } catch (e) { btn.textContent = 'Failed'; setTimeout(() => btn.textContent = 'Copy', 1400); }
-        });
-    }
+    // ===== Heatmap =====
+    (function(){
+        const domains=['Trans.','Health','Env.','B2B','Policy','Intl.','Legal','Intra.'];
+        const data=[];
+        document.querySelectorAll('#domain-lb tbody tr').forEach(r=>{ if(r.classList.contains('row-avg'))return; const c=r.children[0]; const cl=c.cloneNode(true); cl.querySelectorAll('.badge').forEach(b=>b.remove());
+            const vals=Array.from(r.querySelectorAll('td')).slice(1,9).map(td=>parseFloat(td.textContent)); data.push({name:cl.textContent.trim(),vals}); });
+        const svg=d3.select('#domain-heat'); const cellW=54, cellH=34, m={top:40,right:16,bottom:14,left:168};
+        const width=m.left+m.right+domains.length*cellW, height=m.top+m.bottom+data.length*cellH;
+        svg.attr('viewBox','0 0 '+width+' '+height).attr('width','100%').attr('height',height); svg.selectAll('*').remove();
+        const g=svg.append('g').attr('transform',`translate(${m.left},${m.top})`);
+        const x=d3.scaleBand().domain(domains).range([0,domains.length*cellW]).paddingInner(0.07);
+        const y=d3.scaleBand().domain(data.map(d=>d.name)).range([0,data.length*cellH]).paddingInner(0.1);
+        const color=d3.scaleLinear().domain([-10,25,56]).range(['#f5e9e8','#cfe0ef','#2f4a63']);
+        g.selectAll('.col').data(domains).enter().append('text').attr('x',d=>x(d)+x.bandwidth()/2).attr('y',-12).attr('text-anchor','middle').style('font-size','11px').style('font-weight','700').style('fill','#334155').text(d=>d);
+        g.selectAll('.row').data(data).enter().append('text').attr('x',-12).attr('y',d=>y(d.name)+y.bandwidth()/2+4).attr('text-anchor','end').style('font-size','11px').style('fill','#334155').text(d=>d.name);
+        const cells=[]; data.forEach(d=>d.vals.forEach((v,i)=>cells.push({model:d.name,domain:domains[i],value:v})));
+        g.selectAll('.cell').data(cells).enter().append('rect').attr('x',d=>x(d.domain)).attr('y',d=>y(d.model)).attr('width',x.bandwidth()).attr('height',y.bandwidth()).attr('rx',5).attr('fill',d=>color(d.value)).attr('stroke','rgba(255,255,255,0.6)')
+            .on('mousemove',function(d){const e=d3.event;tooltip.style('opacity',1).style('transform','translateY(0)').style('left',(e.pageX+14)+'px').style('top',(e.pageY-20)+'px').html('<strong>'+d.model+'</strong><br>'+d.domain+': '+d.value.toFixed(1));})
+            .on('mouseleave',()=>tooltip.style('opacity',0).style('transform','translateY(6px)'));
+        g.selectAll('.v').data(cells).enter().append('text').attr('x',d=>x(d.domain)+x.bandwidth()/2).attr('y',d=>y(d.model)+y.bandwidth()/2+4).attr('text-anchor','middle').style('font-size','10px').style('font-weight','700').style('fill',d=>d.value>=38?'#fff':'#1f2937').text(d=>d.value.toFixed(1));
+    })();
+
+    // ===== BibTeX copy =====
+    const btn=document.getElementById('copy-bib'), block=document.getElementById('bib-block');
+    if(btn&&block&&navigator.clipboard){ btn.addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText(block.textContent); btn.textContent='Copied!'; setTimeout(()=>btn.textContent='Copy',1400);}catch(e){btn.textContent='Failed';setTimeout(()=>btn.textContent='Copy',1400);} }); }
 });
 </script>
-
-    </body>
+</body>
 </html>
