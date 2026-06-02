@@ -18,7 +18,7 @@
         --eff: #6BAE5A;   /* effectiveness */
         --cgn: #4F81BD;   /* consensus gain */
         --line: #e2e8f0;
-        --nav-h: 62px;
+        --nav-h: 74px;
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -44,15 +44,15 @@
         max-width: 1180px; height: 100%; margin: 0 auto; padding: 0 24px;
         display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
-    .nav-logo img { height: 40px; width: 40px; object-fit: contain; border-radius: 9px; background:#fff; padding: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.18); }
+    .nav-logo { display: flex; align-items: center; gap: 13px; text-decoration: none; }
+    .nav-logo img { height: 54px; width: 54px; object-fit: contain; border-radius: 11px; background:#fff; padding: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
     .nav-logo .lab-placeholder {
         height: 38px; width: 38px; border-radius: 8px;
         display: flex; align-items: center; justify-content: center;
         background: linear-gradient(135deg,#6BAE5A,#4F81BD); color:#fff;
         font-weight: 900; font-size: 1rem; letter-spacing: 0.5px;
     }
-    .nav-logo .lab-name { color: #fff; font-weight: 700; font-size: 1.04rem; letter-spacing: 0.3px; }
+    .nav-logo .lab-name { color: #fff; font-weight: 700; font-size: 1.28rem; letter-spacing: 0.3px; }
     .nav-links { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
     .nav-links a {
         color: #cfe0ef; text-decoration: none; font-size: 0.92rem; font-weight: 600;
@@ -61,7 +61,8 @@
     .nav-links a:hover { background: rgba(255,255,255,0.10); color: #fff; }
     @media (max-width: 880px) {
         .nav-links { display: none; }
-        .nav-logo .lab-name { font-size: 0.95rem; }
+        .nav-logo .lab-name { font-size: 1.08rem; }
+        .nav-logo img { height: 46px; width: 46px; }
     }
 
     /* ===== Hero ===== */
@@ -275,6 +276,20 @@
     .fig-block .fhead .ic { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:0.9rem; flex:0 0 auto; }
     .fig-block h4 { font-size: 1.18rem; color: var(--ink); margin: 0; }
     .fig-block > p { color:#444; font-size:1.06rem; margin: 0 0 12px 0; }
+    /* motivation */
+    .motiv-callout {
+        background: linear-gradient(135deg,#1a2f45,#2f4a63); color:#eaf2fb; border-radius:16px;
+        padding:24px 28px; font-size:1.16rem; line-height:1.75; box-shadow:0 10px 30px rgba(15,23,42,0.12); margin-bottom:24px;
+    }
+    .motiv-callout strong { color:#8be9ff; }
+    .challenge-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:18px; }
+    .challenge { border:1px solid #e9eef3; border-top:4px solid var(--tim); border-radius:14px; background:#fff; padding:18px 18px 16px 18px; box-shadow:0 4px 12px rgba(0,0,0,0.04); display:flex; flex-direction:column; }
+    .challenge .clab { font-size:0.72rem; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; color:var(--tim); }
+    .challenge h4 { margin:5px 0 6px 0; font-size:1.06rem; color:var(--ink); }
+    .challenge p { margin:0 0 12px 0; color:#4a5568; font-size:0.98rem; line-height:1.55; }
+    .challenge .ans { margin-top:auto; font-size:0.92rem; color:#3f7a2e; font-weight:700; border-top:1px dashed #e2e8f0; padding-top:9px; }
+    .challenge .ans b { color:#2f7a2e; }
+    @media (max-width:820px){ .challenge-grid{grid-template-columns:1fr;} }
 
     /* ===== BibTeX ===== */
     pre.bib {
@@ -298,6 +313,7 @@
             <ul class="nav-links">
                 <li><a href="#overview">Overview</a></li>
                 <li><a href="#task">Task</a></li>
+                <li><a href="#motivation">Why</a></li>
                 <li><a href="#method">Method</a></li>
                 <li><a href="#evaluator">Evaluator</a></li>
                 <li><a href="#leaderboard">Leaderboard</a></li>
@@ -433,6 +449,43 @@
                         <strong>What happens next.</strong> After the mediator reframes the deadlock from "equity vs. cash" to "recognition without financing risk," the parties move off their fixed positions. By turn 25 they converge on a guaranteed cash and earnout package, and the topic-localized agreement climbs from <strong style="color:var(--tim)">1 (impasse)</strong> to <strong style="color:var(--eff)">5 (agreement)</strong>. SoCRATES measures exactly this contribution.
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- ===== Motivation ===== -->
+        <section id="motivation">
+            <div class="section-title">Why Benchmark LLM Mediation?</div>
+            <p class="section-sub">If we want LLMs to defuse real disputes, we first need a trustworthy way to measure how well they actually do it.</p>
+
+            <div class="narrow">
+                <div class="motiv-callout">
+                    Social conflict carries heavy societal costs, and skilled human mediators are scarce, which makes <strong>LLM mediators</strong> an appealing alternative. Yet today's models close only a modest fraction of the unmediated consensus gap and collapse under the variations real conflicts exhibit. Progress here is bottlenecked less by modeling than by <strong>evaluation</strong>, because mediation has no single correct answer and must be judged on a real-time trajectory of shifting emotions, intentions, and context.
+                </div>
+
+                <p class="body-text" style="margin-bottom:14px;">Building such an evaluation is hard for three reasons, and existing benchmarks fall short on each.</p>
+
+                <div class="challenge-grid">
+                    <div class="challenge">
+                        <span class="clab">Challenge 1</span>
+                        <h4>Coverage does not scale</h4>
+                        <p>Real disputes carry privacy and legal sensitivity, so existing testbeds are confined to a few expert-authored domains such as bargaining and legal cases. A narrow set of domains overstates a mediator's true ability.</p>
+                        <div class="ans">SoCRATES answer &rarr; <b>Agentic scenario curation</b> across 8 domains</div>
+                    </div>
+                    <div class="challenge">
+                        <span class="clab">Challenge 2</span>
+                        <h4>Complexity collapses to one axis</h4>
+                        <p>Real conflicts vary in emotion, culture, history, and party count, yet prior testbeds vary only strategic posture. Stacking everything together hides <em>which</em> ability a mediator actually fails on.</p>
+                        <div class="ans">SoCRATES answer &rarr; <b>Socio-cognitive probing</b> of 5 independent axes</div>
+                    </div>
+                    <div class="challenge">
+                        <span class="clab">Challenge 3</span>
+                        <h4>Scoring is noisy</h4>
+                        <p>Mediation quality emerges across turns, yet per-turn judges score every topic at every turn. Off-topic content distorts the scores and errors compound along the trajectory.</p>
+                        <div class="ans">SoCRATES answer &rarr; <b>Topic-localized evaluation</b></div>
+                    </div>
+                </div>
+
+                <p class="body-text">SoCRATES removes all three obstacles at once, so that a mediator's score reflects genuine social skill rather than the narrowness of the test. The next section details how each component works.</p>
             </div>
         </section>
 
